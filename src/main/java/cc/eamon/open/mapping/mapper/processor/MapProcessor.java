@@ -52,54 +52,7 @@ public class MapProcessor {
         // 创建resultMap
         methodSpec.addStatement("Map<String, Object> resultMap = new $T<>()", linkedHashMap);
         methodSpec.addStatement("if (obj == null) return resultMap");
-        for (Element fieldElem : elemFields) {
-            String field = fieldElem.getSimpleName().toString();
-            if (ignoreDetailMap.get(field) != null) {
-                // 如果加了ignore注解针对某方法 则直接跳过
-                if (ignoreDetailMap.get(field).checkIn(mapperName)) continue;
-            }
-            // 有modify信息无rename信息
-            if ((modifyDetailMap.get(field) != null) && (renameDetailMap.get(field) == null)) {
-                // 检查该属性的modify信息是否与map绑定
-                if (modifyDetailMap.get(field).getValue(mapperName) != null) {
-                    MapperModifyDetail.ModifyDetail detail = modifyDetailMap.get(field).getValue(mapperName);
-//                                methodSpec.addStatement("resultMap.put(\"" + field + "\", " + simpleName.toString() + "." + detail.getMethodName() + "(obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "()))");
-                    methodSpec.addStatement("resultMap.put(\"" + field + "\", " + "obj." + detail.getModifyName() + "())");
-                    continue;
-                }
-            }
-            // 有rename信息无modify信息
-            else if ((renameDetailMap.get(field) != null) && (modifyDetailMap.get(field) == null)) {
-                // 检查该属性的rename信息是否与map绑定
-                if (renameDetailMap.get(field).getValue(mapperName) != null) {
-                    MapperRenameDetail.RenameDetail detail = renameDetailMap.get(field).getValue(mapperName);
-                    methodSpec.addStatement("resultMap.put(\"" + detail.getRenameName() + "\", " + "obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "())");
-                    continue;
-                }
-            }
-            // 有rename信息和modify信息
-            else if ((modifyDetailMap.get(field) != null) && (renameDetailMap.get(field) != null)) {
-                // 检查该属性的modify和rename信息是否都与map绑定
-                if ((modifyDetailMap.get(field).getValue(mapperName) != null) && (renameDetailMap.get(field).getValue(mapperName) != null)) {
-                    MapperModifyDetail.ModifyDetail modifyDetail = modifyDetailMap.get(field).getValue(mapperName);
-                    MapperRenameDetail.RenameDetail renameDetail = renameDetailMap.get(field).getValue(mapperName);
-                    methodSpec.addStatement("resultMap.put(\"" + renameDetail.getRenameName() + "\", " + "obj." + modifyDetail.getModifyName() + "())");
-                    continue;
-                    // 检查该属性的rename信息是否都与map绑定
-                } else if (renameDetailMap.get(field).getValue(mapperName) != null) {
-                    MapperRenameDetail.RenameDetail detail = renameDetailMap.get(field).getValue(mapperName);
-                    methodSpec.addStatement("resultMap.put(\"" + detail.getRenameName() + "\", " + "obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "())");
-                    continue;
-                    // 检查该属性的modify信息是否都与map绑定
-                } else if (modifyDetailMap.get(field).getValue(mapperName) != null) {
-                    MapperModifyDetail.ModifyDetail detail = modifyDetailMap.get(field).getValue(mapperName);
-                    methodSpec.addStatement("resultMap.put(\"" + field + "\", " + "obj." + detail.getModifyName() + "())");
-                    continue;
-                }
-            }
-            // 若无属性绑定，直接生成方法信息
-            methodSpec.addStatement("resultMap.put(\"" + field + "\", obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "())");
-        }
+        mapProc(mapperName, elemFields, ignoreDetailMap, modifyDetailMap, renameDetailMap, methodSpec);
 
 
         int index = 0;
@@ -202,6 +155,13 @@ public class MapProcessor {
         // 创建resultMap
         methodSpec.addStatement("Map<String, Object> resultMap = new $T<>()", linkedHashMap);
         methodSpec.addStatement("if (obj == null) return resultMap");
+        mapProc(mapperName, elemFields, ignoreDetailMap, modifyDetailMap, renameDetailMap, methodSpec);
+        // 添加返回结果
+        methodSpec.addStatement("return resultMap");
+        return methodSpec.build();
+    }
+
+    private static void mapProc(String mapperName, List<Element> elemFields, Map<String, MapperIgnoreDetail> ignoreDetailMap, Map<String, MapperModifyDetail> modifyDetailMap, Map<String, MapperRenameDetail> renameDetailMap, MethodSpec.Builder methodSpec) {
         for (Element fieldElem : elemFields) {
             String field = fieldElem.getSimpleName().toString();
             if (ignoreDetailMap.get(field) != null) {
@@ -214,7 +174,7 @@ public class MapProcessor {
                 if (modifyDetailMap.get(field).getValue(mapperName) != null) {
                     MapperModifyDetail.ModifyDetail detail = modifyDetailMap.get(field).getValue(mapperName);
 //                                methodSpec.addStatement("resultMap.put(\"" + field + "\", " + simpleName.toString() + "." + detail.getMethodName() + "(obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "()))");
-                    methodSpec.addStatement("resultMap.put(\"" + field + "\", " + "obj." + detail.getModifyName() + "())");
+                    methodSpec.addStatement("resultMap.put(\"" + field + "\", " + "obj." + detail.getModifyName() + "(obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "()))");
                     continue;
                 }
             }
@@ -233,7 +193,7 @@ public class MapProcessor {
                 if ((modifyDetailMap.get(field).getValue(mapperName) != null) && (renameDetailMap.get(field).getValue(mapperName) != null)) {
                     MapperModifyDetail.ModifyDetail modifyDetail = modifyDetailMap.get(field).getValue(mapperName);
                     MapperRenameDetail.RenameDetail renameDetail = renameDetailMap.get(field).getValue(mapperName);
-                    methodSpec.addStatement("resultMap.put(\"" + renameDetail.getRenameName() + "\", " + "obj." + modifyDetail.getModifyName() + "())");
+                    methodSpec.addStatement("resultMap.put(\"" + renameDetail.getRenameName() + "\", " + "obj." + modifyDetail.getModifyName() + "(obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "()))");
                     continue;
                     // 检查该属性的rename信息是否都与map绑定
                 } else if (renameDetailMap.get(field).getValue(mapperName) != null) {
@@ -243,7 +203,7 @@ public class MapProcessor {
                     // 检查该属性的modify信息是否都与map绑定
                 } else if (modifyDetailMap.get(field).getValue(mapperName) != null) {
                     MapperModifyDetail.ModifyDetail detail = modifyDetailMap.get(field).getValue(mapperName);
-                    methodSpec.addStatement("resultMap.put(\"" + field + "\", " + "obj." + detail.getModifyName() + "())");
+                    methodSpec.addStatement("resultMap.put(\"" + field + "\", " + "obj." + detail.getModifyName() + "(obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "()))");
                     continue;
                 }
             }
@@ -251,9 +211,6 @@ public class MapProcessor {
             methodSpec.addStatement("resultMap.put(\"" + field + "\", obj.get" + field.substring(0, 1).toUpperCase() + field.substring(1) + "())");
 
         }
-        // 添加返回结果
-        methodSpec.addStatement("return resultMap");
-        return methodSpec.build();
     }
 
 
