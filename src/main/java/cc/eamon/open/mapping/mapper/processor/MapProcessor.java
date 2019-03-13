@@ -89,7 +89,8 @@ public class MapProcessor {
                 }
                 String pkgName = clazz.replaceAll("\\.[^\\.]+$", "");
                 String clazzName = clazz.replaceAll(".*\\.", "");
-                ClassName className = ClassName.get(pkgName, clazzName);
+                TypeName className = ClassName.get(pkgName, clazzName);
+                if (clazzName.equals("Map")) className = typeOfMap;
                 // 生产一个list
                 if (list) {
                     ClassName listClazz = ClassName.get("java.util", "List");
