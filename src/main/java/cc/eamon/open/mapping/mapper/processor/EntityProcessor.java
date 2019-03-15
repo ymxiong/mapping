@@ -110,6 +110,7 @@ public class EntityProcessor {
                 MapperModifyDetail.ModifyDetail modifyDetail = modifyDetailMap.get(field).getValue(mapperName);
                 if ((modifyDetail != null) && (renameDetailMap.get(field).getValue(mapperName) != null)) {
                     String originName = fieldElem.getSimpleName().toString();
+                    String fieldName = renameDetailMap.get(field).getValue(mapperName).getRenameName();
                     String recoverMethodName = modifyDetail.getRecoverName();
                     // recoverMethodName 为空的情况
                     if (recoverMethodName.equals("")) {
@@ -119,23 +120,23 @@ public class EntityProcessor {
 
                         FieldSpec fieldSpec = FieldSpec.builder(
                                 TypeName.get(recoverType.getReturnType()),
-                                originName,
+                                fieldName,
                                 Modifier.PUBLIC)
                                 .build();
                         typeSpec.addField(fieldSpec);
-                        methodSpec.addStatement("entity." + recoverMethodName + "(this." + originName + ")");
+                        methodSpec.addStatement("entity." + recoverMethodName + "(this." + fieldName + ")");
                     }else{
                         Type.MethodType recoverType = (Type.MethodType) modifyDetail.getRecoverType();
 
                         FieldSpec fieldSpec = FieldSpec.builder(
                                 TypeName.get(recoverType.getReturnType()),
-                                originName,
+                                fieldName,
                                 Modifier.PUBLIC)
                                 .build();
                         typeSpec.addField(fieldSpec);
                         methodSpec.addStatement("entity." +
                                 "set" + originName.substring(0, 1).toUpperCase() + originName.substring(1) + "(" +
-                                "entity." + recoverMethodName + "(this." + originName + "))");
+                                "entity." + recoverMethodName + "(this." + fieldName + "))");
                     }
                     continue;
                     // 检查该属性的rename信息是否都与map绑定
