@@ -73,9 +73,11 @@ public class MapperProcessor extends AbstractProcessor {
     private void scanFields(
             Element elem,
             List<Element> elemFields,
+            Map<String, String> docDetailMap,
             Map<String, MapperIgnoreDetail> ignoreDetailMap,
             Map<String, MapperModifyDetail> modifyDetailMap,
-            Map<String, MapperRenameDetail> renameDetailMap) {
+            Map<String, MapperRenameDetail> renameDetailMap
+            ) {
         Map<String, TypeMirror> methodType = new HashMap<>();
 
         for (Element elemMethod : elem.getEnclosedElements()) {
@@ -91,9 +93,18 @@ public class MapperProcessor extends AbstractProcessor {
                 if (elemField.getModifiers().contains(Modifier.STATIC)) continue;
 
                 elemFields.add(elemField);
+                MapperDoc doc = elemField.getAnnotation(MapperDoc.class);
                 MapperIgnore ignore = elemField.getAnnotation(MapperIgnore.class);
                 MapperModify modify = elemField.getAnnotation(MapperModify.class);
                 MapperRename rename = elemField.getAnnotation(MapperRename.class);
+
+                // 记录doc
+                if (doc!=null && !doc.value().equals("")){
+                    docDetailMap.put(elemField.getSimpleName().toString(), doc.value());
+                }else {
+                    docDetailMap.put(elemField.getSimpleName().toString(), "");
+                }
+
 
                 // 记录ignore
                 if (ignore != null) {
@@ -151,12 +162,13 @@ public class MapperProcessor extends AbstractProcessor {
 
                 // 定义ignore modify和rename项
                 List<Element> fields = new ArrayList<>();
+                Map<String, String> docDetailMap = new HashMap<>();
                 Map<String, MapperIgnoreDetail> ignoreDetailMap = new HashMap<>();
                 Map<String, MapperModifyDetail> modifyDetailMap = new HashMap<>();
                 Map<String, MapperRenameDetail> renameDetailMap = new HashMap<>();
 
                 // 扫描ignore modify和rename项
-                scanFields(elem, fields, ignoreDetailMap, modifyDetailMap, renameDetailMap);
+                scanFields(elem, fields, docDetailMap, ignoreDetailMap, modifyDetailMap, renameDetailMap);
 
 
                 // 获取type信息
@@ -232,7 +244,7 @@ public class MapperProcessor extends AbstractProcessor {
                     }
 
                     // 生成getEntity方法
-                    MethodSpec getEntityMethod = EntityProcessor.buildGetEntityMethod(self, mapperName, fields, ignoreDetailMap, modifyDetailMap, renameDetailMap, typeSpec);
+                    MethodSpec getEntityMethod = EntityProcessor.buildGetEntityMethod(self, mapperName, fields, docDetailMap, ignoreDetailMap, modifyDetailMap, renameDetailMap, typeSpec);
                     // 添加方法
                     typeSpec.addMethod(getEntityMethod);
 

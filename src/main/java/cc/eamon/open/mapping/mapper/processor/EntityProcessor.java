@@ -1,5 +1,6 @@
 package cc.eamon.open.mapping.mapper.processor;
 
+import cc.eamon.open.mapping.mapper.MapperDoc;
 import cc.eamon.open.mapping.mapper.MapperIgnoreDetail;
 import cc.eamon.open.mapping.mapper.MapperModifyDetail;
 import cc.eamon.open.mapping.mapper.MapperRenameDetail;
@@ -34,6 +35,7 @@ public class EntityProcessor {
             ClassName self,
             String mapperName,
             List<Element> elemFields,
+            Map<String, String> docDetailMap,
             Map<String, MapperIgnoreDetail> ignoreDetailMap,
             Map<String, MapperModifyDetail> modifyDetailMap,
             Map<String, MapperRenameDetail> renameDetailMap,
@@ -64,10 +66,12 @@ public class EntityProcessor {
 
                         Type.MethodType recoverType = (Type.MethodType) modifyDetail.getRecoverType();
 
+
                         FieldSpec fieldSpec = FieldSpec.builder(
                                 TypeName.get(recoverType.getReturnType()),
                                 originName,
                                 Modifier.PUBLIC)
+                                .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                                 .build();
                         typeSpec.addField(fieldSpec);
                         methodSpec.addStatement("entity." + recoverMethodName + "(this." + originName + ")");
@@ -78,6 +82,7 @@ public class EntityProcessor {
                                 TypeName.get(recoverType.getReturnType()),
                                 originName,
                                 Modifier.PUBLIC)
+                                .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                                 .build();
                         typeSpec.addField(fieldSpec);
                         methodSpec.addStatement("entity." +
@@ -97,6 +102,7 @@ public class EntityProcessor {
                             TypeName.get(fieldElem.asType()),
                             fieldName,
                             Modifier.PUBLIC)
+                            .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                             .build();
                     typeSpec.addField(fieldSpec);
 
@@ -122,6 +128,7 @@ public class EntityProcessor {
                                 TypeName.get(recoverType.getReturnType()),
                                 fieldName,
                                 Modifier.PUBLIC)
+                                .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                                 .build();
                         typeSpec.addField(fieldSpec);
                         methodSpec.addStatement("entity." + recoverMethodName + "(this." + fieldName + ")");
@@ -132,6 +139,7 @@ public class EntityProcessor {
                                 TypeName.get(recoverType.getReturnType()),
                                 fieldName,
                                 Modifier.PUBLIC)
+                                .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                                 .build();
                         typeSpec.addField(fieldSpec);
                         methodSpec.addStatement("entity." +
@@ -147,6 +155,7 @@ public class EntityProcessor {
                             TypeName.get(fieldElem.asType()),
                             fieldName,
                             Modifier.PUBLIC)
+                            .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                             .build();
                     typeSpec.addField(fieldSpec);
                     methodSpec.addStatement("entity.set" + originName.substring(0, 1).toUpperCase() + originName.substring(1) + "(this." + fieldName + ")");
@@ -161,6 +170,7 @@ public class EntityProcessor {
                             TypeName.get(recoverType.getReturnType()),
                             originName,
                             Modifier.PUBLIC)
+                            .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                             .build();
                     typeSpec.addField(fieldSpec);
                     methodSpec.addStatement("entity." + recoverMethodName + "(this." + originName + ")");
@@ -173,6 +183,7 @@ public class EntityProcessor {
                     TypeName.get(fieldElem.asType()),
                     originName,
                     Modifier.PUBLIC)
+                    .addAnnotation(buildDocAnnotation("\""+docDetailMap.get(field)+"\""))
                     .build();
             typeSpec.addField(fieldSpec);
             // 若无属性绑定，直接生成方法信息
@@ -181,11 +192,20 @@ public class EntityProcessor {
 
         }
 
-
         // 添加返回结果
         methodSpec.addStatement("return entity");
         return methodSpec.build();
     }
+
+
+    private static AnnotationSpec buildDocAnnotation(String field){
+        if (field == null) field = "";
+        return AnnotationSpec
+                .builder(MapperDoc.class)
+                .addMember("value", field)
+                .build();
+    }
+
 
 
 }
