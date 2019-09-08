@@ -53,8 +53,8 @@ public class MapperType {
         ClassName linkedHashMap = ClassName.get("java.util", "LinkedHashMap");
         TypeName typeOfMap = ParameterizedTypeName.get(map, string, object);
 
-        String buildMapMethod = "buildMap";
-        MethodSpec.Builder buildMapMethodSpec = MethodSpec.methodBuilder(buildMapMethod)
+        String buildMapStaticMethod = "buildMap";
+        MethodSpec.Builder buildMapStaticMethodSpec = MethodSpec.methodBuilder(buildMapStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
                 .addModifiers(Modifier.STATIC)
                 .addParameter(self, "obj")
@@ -62,19 +62,25 @@ public class MapperType {
 
 
         // 创建resultMap
-        buildMapMethodSpec.addStatement("Map<String, Object> map = new $T<>()", linkedHashMap);
-        buildMapMethodSpec.addStatement("if (obj == null) return map");
+        buildMapStaticMethodSpec.addStatement("Map<String, Object> map = new $T<>()", linkedHashMap);
+        buildMapStaticMethodSpec.addStatement("if (obj == null) return map");
 
-        String loadEntityMethod = "loadEntity";
-        MethodSpec.Builder loadEntityMethodSpec = MethodSpec.methodBuilder(loadEntityMethod)
+        String buildEntityStaticMethod = "buildEntity";
+        MethodSpec.Builder buildEntityStaticMethodSpec = MethodSpec.methodBuilder(buildEntityStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
                 .addModifiers(Modifier.STATIC)
                 .addParameter(typeOfMap, "map")
                 .returns(self);
 
         // 创建obj
-        loadEntityMethodSpec.addStatement("$T obj = new $T()", self, self);
-        loadEntityMethodSpec.addStatement("if (map == null) return obj");
+        buildEntityStaticMethodSpec.addStatement("$T obj = new $T()", self, self);
+        buildEntityStaticMethodSpec.addStatement("if (map == null) return obj");
+
+        String buildMapMethod = "buildMap";
+        MethodSpec.Builder buildMapMethodSpec = MethodSpec.methodBuilder(buildMapMethod)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(typeOfMap);
+        buildMapMethodSpec.addStatement("Map<String, Object> map = new $T<>()", linkedHashMap);
 
         String buildEntityMethod = "buildEntity";
         MethodSpec.Builder buildEntityMethodSpec = MethodSpec.methodBuilder(buildEntityMethod)
@@ -82,7 +88,7 @@ public class MapperType {
                 .returns(self);
 
         // 创建obj
-        buildEntityMethodSpec.addStatement("$T entity = new $T()", self, self);
+        buildEntityMethodSpec.addStatement("$T obj = new $T()", self, self);
 
         for (MapperField field : mapperFieldList) {
 
@@ -99,19 +105,22 @@ public class MapperType {
                     Modifier.PUBLIC);
             typeSpec.addField(fieldSpec.build());
 
-            buildMapMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + "obj.get" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "())");
-            loadEntityMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(($T)map.get(\"" + renameStrategy.getName() + "\"))", field.getFieldType());
-            buildEntityMethodSpec.addStatement("entity.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(this." + renameStrategy.getName() + ")");
+            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + "obj.get" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "())");
+            buildEntityStaticMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(($T)map.get(\"" + renameStrategy.getName() + "\"))", field.getFieldType());
+            buildMapMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + "this." + renameStrategy.getName() + ")");
+            buildEntityMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(this." + renameStrategy.getName() + ")");
         }
 
         // 添加返回结果
+        buildMapStaticMethodSpec.addStatement("return map");
+        buildEntityStaticMethodSpec.addStatement("return obj");
         buildMapMethodSpec.addStatement("return map");
-        loadEntityMethodSpec.addStatement("return obj");
-        buildEntityMethodSpec.addStatement("return entity");
+        buildEntityMethodSpec.addStatement("return obj");
 
 
+        typeSpec.addMethod(buildMapStaticMethodSpec.build());
+        typeSpec.addMethod(buildEntityStaticMethodSpec.build());
         typeSpec.addMethod(buildMapMethodSpec.build());
-        typeSpec.addMethod(loadEntityMethodSpec.build());
         typeSpec.addMethod(buildEntityMethodSpec.build());
         return typeSpec.build();
     }
