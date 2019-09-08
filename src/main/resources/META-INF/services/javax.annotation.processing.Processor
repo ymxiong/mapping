@@ -1,2 +1,2 @@
-cc.eamon.open.mapping.mapper.MapperProcessor
+cc.eamon.open.mapping.mapper.processor.MapperProcessor
 cc.eamon.open.mapping.group.GroupProcessor

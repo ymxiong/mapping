@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MapperDoc {
 
-    String value() default "";
+    String[] value() default {};
+
+    String[] note() default {};
 
 }
