@@ -1,9 +1,8 @@
 package cc.eamon.open.mapping.mapper.structure.item;
 
-import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
+import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
 import javax.lang.model.type.TypeMirror;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +18,7 @@ public class MapperField {
 
     private TypeMirror fieldType;
 
-    private Map<String, List<MapperDetail>> details;
+    private Map<String, MapperStrategy> strategies;
 
     public String getSimpleName() {
         return simpleName;
@@ -45,11 +44,11 @@ public class MapperField {
         this.fieldType = fieldType;
     }
 
-    public Map<String, List<MapperDetail>> getDetails() {
-        return details;
+    public Map<String, MapperStrategy> getStrategies() {
+        return strategies;
     }
 
-    public void setDetails(Map<String, List<MapperDetail>> details) {
-        this.details = details;
+    public void setStrategies(Map<String, MapperStrategy> strategies) {
+        this.strategies = strategies;
     }
 }

@@ -1,8 +1,9 @@
 package cc.eamon.open.mapping.mapper.structure.item;
 
 import cc.eamon.open.mapping.mapper.StringUtil;
-import cc.eamon.open.mapping.mapper.structure.detail.RenameDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.support.MapperEnum;
+import cc.eamon.open.mapping.mapper.structure.strategy.ignore.IgnoreStrategy;
+import cc.eamon.open.mapping.mapper.structure.strategy.rename.RenameStrategy;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
@@ -75,43 +76,43 @@ public class MapperType {
         loadEntityMethodSpec.addStatement("$T obj = new $T()", self, self);
         loadEntityMethodSpec.addStatement("if (map == null) return obj");
 
+        String buildEntityMethod = "buildEntity";
+        MethodSpec.Builder buildEntityMethodSpec = MethodSpec.methodBuilder(buildEntityMethod)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(self);
+
+        // 创建obj
+        buildEntityMethodSpec.addStatement("$T entity = new $T()", self, self);
 
         for (MapperField field : mapperFieldList) {
 
-            // TODO: need optimize to strategy
-            if (field.getDetails().get(MapperEnum.IGNORE.getName()) != null){
+            IgnoreStrategy ignoreStrategy = (IgnoreStrategy)field.getStrategies().get(MapperEnum.IGNORE.getName());
+            RenameStrategy renameStrategy = (RenameStrategy)field.getStrategies().get(MapperEnum.RENAME.getName());
+
+            if ((ignoreStrategy.ignore())){
                 continue;
             }
 
-            if (field.getDetails().get(MapperEnum.RENAME.getName()) != null && field.getDetails().get(MapperEnum.RENAME.getName()).get(0) != null){
-                RenameDetail renameDetail = (RenameDetail) field.getDetails().get(MapperEnum.RENAME.getName()).get(0);
-                FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                        TypeName.get(field.getFieldType()),
-                        renameDetail.getFreshName(),
-                        Modifier.PUBLIC);
-                typeSpec.addField(fieldSpec.build());
+            FieldSpec.Builder fieldSpec = FieldSpec.builder(
+                    TypeName.get(field.getFieldType()),
+                    renameStrategy.getName(),
+                    Modifier.PUBLIC);
+            typeSpec.addField(fieldSpec.build());
 
-                buildMapMethodSpec.addStatement("map.put(\"" + renameDetail.getFreshName() + "\", " + "obj.get" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "())");
-                loadEntityMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(($T)map.get(\"" + renameDetail.getFreshName() + "\"))", field.getFieldType());
-            }else {
-                FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                        TypeName.get(field.getFieldType()),
-                        field.getSimpleName(),
-                        Modifier.PUBLIC);
-                typeSpec.addField(fieldSpec.build());
-
-                buildMapMethodSpec.addStatement("map.put(\"" + field.getSimpleName() + "\", " + "obj.get" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "())");
-                loadEntityMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(($T)map.get(\"" + field.getSimpleName() + "\"))", field.getFieldType());
-            }
+            buildMapMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + "obj.get" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "())");
+            loadEntityMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(($T)map.get(\"" + renameStrategy.getName() + "\"))", field.getFieldType());
+            buildEntityMethodSpec.addStatement("entity.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(this." + renameStrategy.getName() + ")");
         }
 
         // 添加返回结果
         buildMapMethodSpec.addStatement("return map");
         loadEntityMethodSpec.addStatement("return obj");
+        buildEntityMethodSpec.addStatement("return entity");
 
 
         typeSpec.addMethod(buildMapMethodSpec.build());
         typeSpec.addMethod(loadEntityMethodSpec.build());
+        typeSpec.addMethod(buildEntityMethodSpec.build());
         return typeSpec.build();
     }
 

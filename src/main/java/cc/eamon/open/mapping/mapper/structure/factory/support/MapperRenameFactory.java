@@ -5,6 +5,8 @@ import cc.eamon.open.mapping.mapper.structure.factory.FieldFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.detail.RenameDetail;
+import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
+import cc.eamon.open.mapping.mapper.structure.strategy.rename.OriginRenameStrategy;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
@@ -65,7 +67,20 @@ public class MapperRenameFactory extends MapperBaseFactory implements FieldFacto
         return details;
     }
 
-
-
-
+    @Override
+    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper) {
+        OriginRenameStrategy strategy = new OriginRenameStrategy();
+        RenameDetail detail = null;
+        if (details == null){
+            detail = new RenameDetail();
+            detail.setMapper(mapper);
+            detail.setElementName(element.getSimpleName().toString());
+            detail.setFreshName(element.getSimpleName().toString());
+            detail.setOriginName(element.getSimpleName().toString());
+        }else {
+            detail = (RenameDetail) details.get(0);
+        }
+        strategy.setDetail(detail);
+        return strategy;
+    }
 }

@@ -5,6 +5,9 @@ import cc.eamon.open.mapping.mapper.structure.detail.IgnoreDetail;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.FieldFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
+import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
+import cc.eamon.open.mapping.mapper.structure.strategy.ignore.OriginIgnoreStrategy;
+import cc.eamon.open.mapping.mapper.structure.strategy.ignore.PresentIgnoreStrategy;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
@@ -53,6 +56,14 @@ public class MapperIgnoreFactory extends MapperBaseFactory implements FieldFacto
         }
 
         return details;
+    }
+
+    @Override
+    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper) {
+        if (details == null){
+            return new OriginIgnoreStrategy();
+        }
+        return new PresentIgnoreStrategy();
     }
 
 }

@@ -3,6 +3,7 @@ package cc.eamon.open.mapping.mapper.structure.factory.support;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.TypeFactory;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
+import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
@@ -24,4 +25,10 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
     public List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper) {
         return null;
     }
+
+    @Override
+    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper) {
+        return null;
+    }
+
 }

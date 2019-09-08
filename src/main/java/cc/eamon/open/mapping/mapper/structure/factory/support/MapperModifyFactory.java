@@ -3,6 +3,7 @@ package cc.eamon.open.mapping.mapper.structure.factory.support;
 import cc.eamon.open.mapping.mapper.structure.factory.FieldFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
+import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
@@ -22,6 +23,11 @@ public class MapperModifyFactory extends MapperBaseFactory implements FieldFacto
 
     @Override
     public List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper) {
+        return null;
+    }
+
+    @Override
+    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper) {
         return null;
     }
 

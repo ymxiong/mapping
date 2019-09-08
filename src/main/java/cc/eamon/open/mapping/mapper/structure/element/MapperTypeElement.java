@@ -76,7 +76,7 @@ public class MapperTypeElement {
                 mapperField.setFieldType(element.asType());
 
                 // set annotation info
-                mapperField.setDetails(MapperBaseFactory.buildFieldDetails(element, mapperName));
+                mapperField.setStrategies(MapperBaseFactory.buildFieldDetails(element, mapperName));
                 fields.add(mapperField);
             });
 

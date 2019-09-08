@@ -1,10 +1,9 @@
 package cc.eamon.open.mapping.mapper.structure.factory;
 
-import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
+import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
  * Author: eamon
@@ -19,7 +18,7 @@ public interface MapperFactory {
      * @param element javax model element
      * @return detail
      */
-    List<MapperDetail> build(Annotation annotation, Element element, String mapper);
+    MapperStrategy build(Annotation annotation, Element element, String mapper);
 
     /**
      * Is mapper value repeat allowed
