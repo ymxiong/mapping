@@ -9,6 +9,10 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
  */
 public interface RenameStrategy extends MapperStrategy {
 
+    /**
+     * get name of target value field
+     * @return name
+     */
     String getName();
 
 }
