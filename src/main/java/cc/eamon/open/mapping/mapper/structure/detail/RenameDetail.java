@@ -7,37 +7,7 @@ package cc.eamon.open.mapping.mapper.structure.detail;
  */
 public class RenameDetail implements MapperDetail {
 
-    private String mapper;
-
-    private String elementName;
-
-    private String originName;
-
     private String freshName;
-
-    public String getElementName() {
-        return elementName;
-    }
-
-    public void setElementName(String elementName) {
-        this.elementName = elementName;
-    }
-
-    public String getMapper() {
-        return mapper;
-    }
-
-    public void setMapper(String mapper) {
-        this.mapper = mapper;
-    }
-
-    public String getOriginName() {
-        return originName;
-    }
-
-    public void setOriginName(String originName) {
-        this.originName = originName;
-    }
 
     public String getFreshName() {
         return freshName;

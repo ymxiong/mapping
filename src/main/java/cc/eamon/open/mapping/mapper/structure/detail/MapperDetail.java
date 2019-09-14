@@ -7,12 +7,4 @@ package cc.eamon.open.mapping.mapper.structure.detail;
  */
 public interface MapperDetail {
 
-    String getElementName();
-
-    void setElementName(String elementName);
-
-    String getMapper();
-
-    void setMapper(String mapper);
-
 }

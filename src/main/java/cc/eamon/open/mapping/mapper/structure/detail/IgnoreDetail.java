@@ -7,27 +7,4 @@ package cc.eamon.open.mapping.mapper.structure.detail;
  */
 public class IgnoreDetail implements MapperDetail {
 
-    private String mapper;
-
-    private String elementName;
-
-    @Override
-    public String getMapper() {
-        return mapper;
-    }
-
-    @Override
-    public void setMapper(String mapper) {
-        this.mapper = mapper;
-    }
-
-    @Override
-    public String getElementName() {
-        return elementName;
-    }
-
-    @Override
-    public void setElementName(String elementName) {
-        this.elementName = elementName;
-    }
 }
