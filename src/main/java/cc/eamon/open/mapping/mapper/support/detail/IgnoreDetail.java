@@ -1,4 +1,6 @@
-package cc.eamon.open.mapping.mapper.structure.detail;
+package cc.eamon.open.mapping.mapper.support.detail;
+
+import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 
 /**
  * Author: eamon

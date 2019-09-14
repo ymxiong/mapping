@@ -1,6 +1,6 @@
 package cc.eamon.open.mapping.mapper.structure.factory;
 
-import cc.eamon.open.mapping.mapper.structure.factory.support.MapperEnum;
+import cc.eamon.open.mapping.mapper.support.factory.MapperEnum;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 

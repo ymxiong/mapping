@@ -1,4 +1,4 @@
-package cc.eamon.open.mapping.mapper.structure.strategy.modify;
+package cc.eamon.open.mapping.mapper.support.strategy;
 
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 

@@ -1,7 +1,7 @@
-package cc.eamon.open.mapping.mapper.structure.strategy.rename;
+package cc.eamon.open.mapping.mapper.support.strategy;
 
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
-import cc.eamon.open.mapping.mapper.structure.detail.RenameDetail;
+import cc.eamon.open.mapping.mapper.support.detail.RenameDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 
 /**

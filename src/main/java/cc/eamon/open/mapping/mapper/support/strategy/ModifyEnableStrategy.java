@@ -1,7 +1,7 @@
-package cc.eamon.open.mapping.mapper.structure.strategy.modify;
+package cc.eamon.open.mapping.mapper.support.strategy;
 
 import cc.eamon.open.mapping.mapper.StringUtil;
-import cc.eamon.open.mapping.mapper.structure.detail.ModifyDetail;
+import cc.eamon.open.mapping.mapper.support.detail.ModifyDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 
 import javax.lang.model.type.TypeMirror;

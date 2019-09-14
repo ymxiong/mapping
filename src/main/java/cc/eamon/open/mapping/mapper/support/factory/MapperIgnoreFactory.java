@@ -1,13 +1,13 @@
-package cc.eamon.open.mapping.mapper.structure.factory.support;
+package cc.eamon.open.mapping.mapper.support.factory;
 
 import cc.eamon.open.mapping.mapper.MapperIgnore;
-import cc.eamon.open.mapping.mapper.structure.detail.IgnoreDetail;
+import cc.eamon.open.mapping.mapper.support.detail.IgnoreDetail;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.FieldFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
-import cc.eamon.open.mapping.mapper.structure.strategy.ignore.IgnoreNormalStrategy;
-import cc.eamon.open.mapping.mapper.structure.strategy.ignore.IgnoreEnabledStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.IgnoreNormalStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.IgnoreEnabledStrategy;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;

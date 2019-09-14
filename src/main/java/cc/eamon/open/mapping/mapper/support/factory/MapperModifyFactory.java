@@ -1,14 +1,14 @@
-package cc.eamon.open.mapping.mapper.structure.factory.support;
+package cc.eamon.open.mapping.mapper.support.factory;
 
 import cc.eamon.open.mapping.mapper.MapperModify;
 import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
-import cc.eamon.open.mapping.mapper.structure.detail.ModifyDetail;
+import cc.eamon.open.mapping.mapper.support.detail.ModifyDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.FieldFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
-import cc.eamon.open.mapping.mapper.structure.strategy.modify.ModifyEnableStrategy;
-import cc.eamon.open.mapping.mapper.structure.strategy.modify.ModifyNormalStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.ModifyEnableStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.ModifyNormalStrategy;
 import com.sun.tools.javac.code.Type;
 
 import javax.lang.model.element.Element;

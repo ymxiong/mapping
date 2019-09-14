@@ -1,4 +1,4 @@
-package cc.eamon.open.mapping.mapper.structure.factory.support;
+package cc.eamon.open.mapping.mapper.support.factory;
 
 import cc.eamon.open.mapping.mapper.structure.factory.FieldFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;

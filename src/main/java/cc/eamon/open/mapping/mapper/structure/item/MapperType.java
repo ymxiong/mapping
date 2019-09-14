@@ -1,10 +1,10 @@
 package cc.eamon.open.mapping.mapper.structure.item;
 
 import cc.eamon.open.mapping.mapper.StringUtil;
-import cc.eamon.open.mapping.mapper.structure.factory.support.MapperEnum;
-import cc.eamon.open.mapping.mapper.structure.strategy.ignore.IgnoreStrategy;
-import cc.eamon.open.mapping.mapper.structure.strategy.modify.ModifyStrategy;
-import cc.eamon.open.mapping.mapper.structure.strategy.rename.RenameStrategy;
+import cc.eamon.open.mapping.mapper.support.factory.MapperEnum;
+import cc.eamon.open.mapping.mapper.support.strategy.IgnoreStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.ModifyStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
