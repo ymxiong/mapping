@@ -21,7 +21,7 @@ public interface MapperFactory {
     MapperStrategy build(Annotation annotation, Element element, String mapper);
 
     /**
-     * Is mapper value repeat allowed
+     * Is value value repeat allowed
      * @return allowValueRepeat
      */
     Boolean allowValueRepeat();

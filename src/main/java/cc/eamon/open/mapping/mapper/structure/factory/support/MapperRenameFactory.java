@@ -6,7 +6,8 @@ import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.detail.RenameDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
-import cc.eamon.open.mapping.mapper.structure.strategy.rename.OriginRenameStrategy;
+import cc.eamon.open.mapping.mapper.structure.strategy.rename.RenameEnabledStrategy;
+import cc.eamon.open.mapping.mapper.structure.strategy.rename.RenameNormalStrategy;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
@@ -39,20 +40,13 @@ public class MapperRenameFactory extends MapperBaseFactory implements FieldFacto
         List<MapperDetail> details = new ArrayList<>();
         for (int i = 0; i < mapperRename.value().length; i++) {
 
-            // get current mapper
-            if (!mapper.equals(mapperRename.value()[i])){
+            // get current value
+            if (!mapper.equals(mapperRename.value()[i])) {
                 continue;
             }
 
             // new detail
             RenameDetail detail = new RenameDetail();
-
-            // set target
-            detail.setMapper(mapperRename.value()[i]);
-
-            // set field name
-            detail.setElementName(element.getSimpleName().toString());
-            detail.setOriginName(element.getSimpleName().toString());
 
             // set new name
             if (i >= mapperRename.name().length) {
@@ -68,19 +62,12 @@ public class MapperRenameFactory extends MapperBaseFactory implements FieldFacto
     }
 
     @Override
-    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper) {
-        OriginRenameStrategy strategy = new OriginRenameStrategy();
-        RenameDetail detail = null;
-        if (details == null){
-            detail = new RenameDetail();
-            detail.setMapper(mapper);
-            detail.setElementName(element.getSimpleName().toString());
-            detail.setFreshName(element.getSimpleName().toString());
-            detail.setOriginName(element.getSimpleName().toString());
-        }else {
-            detail = (RenameDetail) details.get(0);
+    public MapperStrategy buildStrategy(List<MapperDetail> details) {
+        if (details == null || details.size() == 0) {
+            return new RenameNormalStrategy();
         }
-        strategy.setDetail(detail);
+        RenameEnabledStrategy strategy = new RenameEnabledStrategy();
+        strategy.setDetail((RenameDetail) details.get(0));
         return strategy;
     }
 }

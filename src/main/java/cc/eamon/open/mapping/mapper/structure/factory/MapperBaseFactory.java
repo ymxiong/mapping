@@ -38,7 +38,18 @@ public abstract class MapperBaseFactory implements MapperFactory {
         return buildStrategy(details, element, mapper);
     }
 
-    public abstract MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper);
+    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper){
+        MapperStrategy strategy = buildStrategy(details);
+        if (strategy!=null){
+            strategy.setMapper(mapper);
+            strategy.setElementName(element.getSimpleName().toString());
+            strategy.setElementType(element.asType());
+        }
+        return strategy;
+    }
+
+    public abstract MapperStrategy buildStrategy(List<MapperDetail> details);
+
 
     public abstract List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper);
 
@@ -49,27 +60,29 @@ public abstract class MapperBaseFactory implements MapperFactory {
      * @param element javax model element
      * @return list of strategy
      */
-    public static Map<String, MapperStrategy> buildFieldDetails(Element element, String mapper) {
+    public static Map<String, MapperStrategy> buildFieldStrategy(Element element, String mapper) {
 
-        Map<String, MapperStrategy> details = new HashMap<>();
+        Map<String, MapperStrategy> strategies = new HashMap<>();
 
-        // build strategy of all mapper enum
+        // build strategy of all value enum
         for (MapperEnum mapperEnum : MapperEnum.values()) {
 
-            // find mapper processing factory
+            // find value processing factory
             MapperFactory factory = mapperEnum.getFactory();
 
-            // find mapper annotation info
-            Annotation annotation = element.getAnnotation(mapperEnum.getType());
+            if (factory instanceof FieldFactory){
 
-            // build detail
-            MapperStrategy strategy = factory.build(annotation, element, mapper);
+                // find value annotation info
+                Annotation annotation = element.getAnnotation(mapperEnum.getType());
 
-            // add detail
-            details.put(mapperEnum.getName(), strategy);
+                // build detail
+                MapperStrategy strategy = factory.build(annotation, element, mapper);
+
+                // add detail
+                strategies.put(mapperEnum.getName(), strategy);
+            }
         }
-
-        return details;
+        return strategies;
     }
 
 }

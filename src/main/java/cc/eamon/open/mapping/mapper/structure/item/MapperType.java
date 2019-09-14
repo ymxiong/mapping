@@ -3,6 +3,7 @@ package cc.eamon.open.mapping.mapper.structure.item;
 import cc.eamon.open.mapping.mapper.StringUtil;
 import cc.eamon.open.mapping.mapper.structure.factory.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.structure.strategy.ignore.IgnoreStrategy;
+import cc.eamon.open.mapping.mapper.structure.strategy.modify.ModifyStrategy;
 import cc.eamon.open.mapping.mapper.structure.strategy.rename.RenameStrategy;
 import com.squareup.javapoet.*;
 
@@ -28,7 +29,8 @@ public class MapperType {
 
     private List<MapperField> mapperFieldList;
 
-    private MapperType() {}
+    private MapperType() {
+    }
 
     private MapperType(String packageName, String simpleName, String qualifiedName, String mapperName, List<MapperMethod> mapperMethodList, List<MapperField> mapperFieldList) {
         this.packageName = packageName;
@@ -61,27 +63,6 @@ public class MapperType {
                 .returns(typeOfMap);
 
 
-        // 创建resultMap
-        buildMapStaticMethodSpec.addStatement("Map<String, Object> map = new $T<>()", linkedHashMap);
-        buildMapStaticMethodSpec.addStatement("if (obj == null) return map");
-
-        String buildEntityStaticMethod = "buildEntity";
-        MethodSpec.Builder buildEntityStaticMethodSpec = MethodSpec.methodBuilder(buildEntityStaticMethod)
-                .addModifiers(Modifier.PUBLIC)
-                .addModifiers(Modifier.STATIC)
-                .addParameter(typeOfMap, "map")
-                .returns(self);
-
-        // 创建obj
-        buildEntityStaticMethodSpec.addStatement("$T obj = new $T()", self, self);
-        buildEntityStaticMethodSpec.addStatement("if (map == null) return obj");
-
-        String buildMapMethod = "buildMap";
-        MethodSpec.Builder buildMapMethodSpec = MethodSpec.methodBuilder(buildMapMethod)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(typeOfMap);
-        buildMapMethodSpec.addStatement("Map<String, Object> map = new $T<>()", linkedHashMap);
-
         String buildEntityMethod = "buildEntity";
         MethodSpec.Builder buildEntityMethodSpec = MethodSpec.methodBuilder(buildEntityMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -90,38 +71,52 @@ public class MapperType {
         // 创建obj
         buildEntityMethodSpec.addStatement("$T obj = new $T()", self, self);
 
+        // 创建resultMap
+        buildMapStaticMethodSpec.addStatement("Map<String, Object> map = new $T<>()", linkedHashMap);
+        buildMapStaticMethodSpec.addStatement("if (obj == null) return map");
+
+        String parseEntityStaticMethod = "parseEntity";
+        MethodSpec.Builder parseEntityStaticMethodSpec = MethodSpec.methodBuilder(parseEntityStaticMethod)
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addParameter(typeOfMap, "map")
+                .returns(self);
+
+        // 创建obj
+        parseEntityStaticMethodSpec.addStatement("$T obj = new $T()", self, self);
+        parseEntityStaticMethodSpec.addStatement("if (map == null) return obj");
+
+
         for (MapperField field : mapperFieldList) {
 
-            IgnoreStrategy ignoreStrategy = (IgnoreStrategy)field.getStrategies().get(MapperEnum.IGNORE.getName());
-            RenameStrategy renameStrategy = (RenameStrategy)field.getStrategies().get(MapperEnum.RENAME.getName());
+            IgnoreStrategy ignoreStrategy = (IgnoreStrategy) field.getStrategies().get(MapperEnum.IGNORE.getName());
+            RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
+            ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
 
-            if ((ignoreStrategy.ignore())){
+            if ((ignoreStrategy.ignore())) {
                 continue;
             }
 
             FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                    TypeName.get(field.getFieldType()),
+                    TypeName.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
                     Modifier.PUBLIC);
             typeSpec.addField(fieldSpec.build());
 
-            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + "obj.get" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "())");
-            buildEntityStaticMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(($T)map.get(\"" + renameStrategy.getName() + "\"))", field.getFieldType());
-            buildMapMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + "this." + renameStrategy.getName() + ")");
-            buildEntityMethodSpec.addStatement("obj.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(this." + renameStrategy.getName() + ")");
+            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + modifyStrategy.getModifyName() + ")");
+            buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName().replace("$", "this." + renameStrategy.getName()));
+            parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName().replace("$", "($T)map.get(\"" + renameStrategy.getName() + "\")"), modifyStrategy.getModifyType());
         }
 
         // 添加返回结果
         buildMapStaticMethodSpec.addStatement("return map");
-        buildEntityStaticMethodSpec.addStatement("return obj");
-        buildMapMethodSpec.addStatement("return map");
         buildEntityMethodSpec.addStatement("return obj");
+        parseEntityStaticMethodSpec.addStatement("return obj");
 
 
         typeSpec.addMethod(buildMapStaticMethodSpec.build());
-        typeSpec.addMethod(buildEntityStaticMethodSpec.build());
-        typeSpec.addMethod(buildMapMethodSpec.build());
         typeSpec.addMethod(buildEntityMethodSpec.build());
+        typeSpec.addMethod(parseEntityStaticMethodSpec.build());
         return typeSpec.build();
     }
 
@@ -174,11 +169,11 @@ public class MapperType {
     }
 
 
-    public static MapperType.MapperTypeBuilder builder(){
+    public static MapperType.MapperTypeBuilder builder() {
         return new MapperType.MapperTypeBuilder();
     }
 
-    public static class MapperTypeBuilder{
+    public static class MapperTypeBuilder {
 
         private String packageName;
 
@@ -192,7 +187,8 @@ public class MapperType {
 
         private List<MapperField> mapperFieldList;
 
-        private MapperTypeBuilder(){}
+        private MapperTypeBuilder() {
+        }
 
         public MapperTypeBuilder packageName(String packageName) {
             this.packageName = packageName;
@@ -224,7 +220,7 @@ public class MapperType {
             return this;
         }
 
-        public MapperType build(){
+        public MapperType build() {
             return new MapperType(packageName, simpleName, qualifiedName, mapperName, mapperMethodList, mapperFieldList);
         }
     }

@@ -29,7 +29,7 @@ public class MapperDocFactory extends MapperBaseFactory implements TypeFactory, 
     }
 
     @Override
-    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper) {
+    public MapperStrategy buildStrategy(List<MapperDetail> details) {
         return null;
     }
 
