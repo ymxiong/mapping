@@ -36,7 +36,7 @@ public class MapperTypeElement {
         }
         // store default
         MapperContextHolder.get().getMappers().add("default");
-        // store type mapper info
+        // store type value info
         MapperContextHolder.get().getMappers().addAll(Lists.newArrayList(mapper.value()));
 
         // store method info
@@ -76,7 +76,7 @@ public class MapperTypeElement {
                 mapperField.setFieldType(element.asType());
 
                 // set annotation info
-                mapperField.setStrategies(MapperBaseFactory.buildFieldDetails(element, mapperName));
+                mapperField.setStrategies(MapperBaseFactory.buildFieldStrategy(element, mapperName));
                 fields.add(mapperField);
             });
 

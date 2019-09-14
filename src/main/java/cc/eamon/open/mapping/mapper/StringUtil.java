@@ -13,7 +13,7 @@ public class StringUtil {
         }else if (input.length() == 0){
             return "";
         }else {
-            return (input.charAt(0) + "").toUpperCase() + input.substring(1).toLowerCase();
+            return (input.charAt(0) + "").toUpperCase() + input.substring(1);
         }
     }
 
