@@ -2,7 +2,9 @@ package cc.eamon.open.mapping.mapper.processor;
 
 import cc.eamon.open.mapping.ProcessingException;
 import cc.eamon.open.mapping.mapper.Mapper;
+import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.structure.element.MapperTypeElement;
+import cc.eamon.open.mapping.mapper.support.MapperBuilder;
 import com.squareup.javapoet.JavaFile;
 
 import javax.annotation.processing.*;
@@ -14,7 +16,9 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,6 +61,9 @@ public class MapperProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         try {
             // 扫描类 过滤掉非类上注解
+            Map<String, Element> mapperElements = new HashMap<>();
+            roundEnv.getElementsAnnotatedWith(Mapper.class).forEach((element)-> mapperElements.put(((TypeElement)element).getQualifiedName().toString(), element));
+
             for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
                 if (elem.getKind() != ElementKind.CLASS) {
                     throw new ProcessingException(elem, "Only classes can be annotated with @%s", Mapper.class.getSimpleName());
@@ -68,16 +75,19 @@ public class MapperProcessor extends AbstractProcessor {
                 PackageElement packageElement = elementUtils.getPackageOf(typeElement);
 
                 // 建立mapperElement
+                MapperContextHolder.init();
+                MapperContextHolder.get().getMapperElements().putAll(mapperElements);
                 MapperTypeElement mapperElement = new MapperTypeElement(packageElement, typeElement);
                 mapperElement.build().forEach(
                         mapperType -> {
                             try {
-                                JavaFile.builder(mapperType.getPackageName(), mapperType.generate()).build().writeTo(filer);
+                                JavaFile.builder(mapperType.getPackageName(), MapperBuilder.build(mapperType)).build().writeTo(filer);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                 );
+                MapperContextHolder.clear();
             }
         } catch (Exception e) {
             e.printStackTrace();

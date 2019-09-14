@@ -1,10 +1,13 @@
 package cc.eamon.open.mapping.mapper.structure.factory;
 
-import cc.eamon.open.mapping.mapper.support.factory.MapperEnum;
+import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +41,9 @@ public abstract class MapperBaseFactory implements MapperFactory {
         return buildStrategy(details, element, mapper);
     }
 
-    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper){
+    public MapperStrategy buildStrategy(List<MapperDetail> details, Element element, String mapper) {
         MapperStrategy strategy = buildStrategy(details);
-        if (strategy!=null){
+        if (strategy != null) {
             strategy.setMapper(mapper);
             strategy.setElementName(element.getSimpleName().toString());
             strategy.setElementType(element.asType());
@@ -55,12 +58,12 @@ public abstract class MapperBaseFactory implements MapperFactory {
 
 
     /**
-     * Build field details
+     * Build strategies
      *
      * @param element javax model element
      * @return list of strategy
      */
-    public static Map<String, MapperStrategy> buildFieldStrategy(Element element, String mapper) {
+    public static Map<String, MapperStrategy> buildStrategies(Element element, String mapper) {
 
         Map<String, MapperStrategy> strategies = new HashMap<>();
 
@@ -70,17 +73,21 @@ public abstract class MapperBaseFactory implements MapperFactory {
             // find value processing factory
             MapperFactory factory = mapperEnum.getFactory();
 
-            if (factory instanceof FieldFactory){
-
-                // find value annotation info
-                Annotation annotation = element.getAnnotation(mapperEnum.getType());
-
-                // build detail
-                MapperStrategy strategy = factory.build(annotation, element, mapper);
-
-                // add detail
-                strategies.put(mapperEnum.getName(), strategy);
+            if (!(element instanceof TypeElement && factory instanceof TypeFactory) &&
+                    !(element instanceof VariableElement && factory instanceof FieldFactory) &&
+                    !(element instanceof ExecutableElement && factory instanceof MethodFactory)
+            ) {
+                continue;
             }
+
+            // find value annotation info
+            Annotation annotation = element.getAnnotation(mapperEnum.getType());
+
+            // build detail
+            MapperStrategy strategy = factory.build(annotation, element, mapper);
+
+            // add detail
+            strategies.put(mapperEnum.getName(), strategy);
         }
         return strategies;
     }

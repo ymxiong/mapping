@@ -29,11 +29,13 @@ public class MapperTypeElement {
         this.packageElement = packageElement;
         this.typeElement = typeElement;
 
+        // build mapper
         Mapper mapper = typeElement.getAnnotation(Mapper.class);
         if (mapper == null) {
             // TODO: ALARM INFO EXCEPTION THROW
             throw new Exception();
         }
+
         // store default
         MapperContextHolder.get().getMappers().add("default");
         // store type value info
@@ -63,7 +65,11 @@ public class MapperTypeElement {
     public Set<MapperType> build() {
 
         Set<MapperType> mapperTypeSet = new HashSet<>();
-        MapperContextHolder.get().getMappers().forEach((mapperName) -> {
+
+        // build mapper
+        MapperContextHolder.get().getMappers().forEach((mapper) -> {
+
+            // build field
             List<MapperField> fields = new ArrayList<>();
             MapperContextHolder.get().getFieldMap().forEach((field, element) -> {
 
@@ -71,30 +77,33 @@ public class MapperTypeElement {
                 MapperField mapperField = new MapperField();
 
                 // set basic info
-                mapperField.setMapperName(mapperName);
+                mapperField.setMapperName(mapper);
                 mapperField.setSimpleName(field);
                 mapperField.setFieldType(element.asType());
 
                 // set annotation info
-                mapperField.setStrategies(MapperBaseFactory.buildFieldStrategy(element, mapperName));
+                mapperField.setStrategies(MapperBaseFactory.buildStrategies(element, mapper));
                 fields.add(mapperField);
             });
 
+            // build method
             List<MapperMethod> methods = new ArrayList<>();
             MapperContextHolder.get().getMethodMap().forEach((method, element) -> {
                 MapperMethod mapperMethod = new MapperMethod();
-                mapperMethod.setMapperName(mapperName);
+                mapperMethod.setMapperName(mapper);
                 mapperMethod.setSimpleName(method);
                 methods.add(mapperMethod);
             });
 
+            // build type
             MapperType mapperType = MapperType.builder()
-                    .mapperName(mapperName)
+                    .mapperName(mapper)
                     .packageName(packageElement.isUnnamed() ? "" : packageElement.getQualifiedName().toString())
                     .simpleName(typeElement.getSimpleName().toString())
                     .qualifiedName(typeElement.getQualifiedName().toString())
                     .mapperFieldList(fields)
                     .mapperMethodList(methods)
+                    .mapperStrategies(MapperBaseFactory.buildStrategies(typeElement, mapper))
                     .build();
             mapperTypeSet.add(mapperType);
         });

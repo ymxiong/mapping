@@ -1,7 +1,8 @@
-package cc.eamon.open.mapping.mapper.support.factory;
+package cc.eamon.open.mapping.mapper.support;
 
 import cc.eamon.open.mapping.mapper.*;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperFactory;
+import cc.eamon.open.mapping.mapper.support.factory.*;
 
 import java.lang.annotation.Annotation;
 
@@ -11,6 +12,8 @@ import java.lang.annotation.Annotation;
  * Time: 2019-08-31 22:47:27
  */
 public enum MapperEnum {
+
+    EXTENDS("EXTENDS", Mapper.class, new MapperExtendsFactory()),
 
     EXTRA("EXTRA", MapperExtra.class, new MapperExtraFactory()),
 
