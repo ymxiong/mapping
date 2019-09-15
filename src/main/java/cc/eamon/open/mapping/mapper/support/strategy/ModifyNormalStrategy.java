@@ -3,8 +3,6 @@ package cc.eamon.open.mapping.mapper.support.strategy;
 import cc.eamon.open.mapping.mapper.StringUtil;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 
-import javax.lang.model.type.TypeMirror;
-
 /**
  * Author: eamon
  * Email: eamon@eamon.cc
@@ -23,13 +21,13 @@ public class ModifyNormalStrategy extends MapperBaseStrategy implements ModifySt
     }
 
     @Override
-    public TypeMirror getModifyType() {
-        return getElementType();
+    public String getModifyType() {
+        return getQualifiedTypeName();
     }
 
     @Override
-    public TypeMirror getRecoverType() {
-        return getElementType();
+    public String getRecoverType() {
+        return getQualifiedTypeName();
     }
 
 }

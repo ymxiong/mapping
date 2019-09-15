@@ -78,8 +78,9 @@ public class MapperTypeElement {
 
                 // set basic info
                 mapperField.setMapperName(mapper);
-                mapperField.setSimpleName(field);
-                mapperField.setFieldType(element.asType());
+                mapperField.setSimpleName(element.getSimpleName().toString());
+                mapperField.setQualifiedTypeName(element.asType().toString());
+
 
                 // set annotation info
                 mapperField.setStrategies(MapperBaseFactory.buildStrategies(element, mapper));

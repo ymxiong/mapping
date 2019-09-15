@@ -56,8 +56,9 @@ public class MapperModifyFactory extends MapperBaseFactory implements FieldFacto
             }
 
             // TODO: check method exist
+
             Type.MethodType methodType = (Type.MethodType) MapperContextHolder.get().getMethodMap().get(detail.getModifyMethodName()).asType();
-            detail.setModifyType(methodType.getReturnType());
+            detail.setModifyQualifiedTypeName(methodType.getReturnType().toString());
 
             if (i >= mapperModify.recover().length) {
                 detail.setRecoverMethodName(mapperModify.recover()[mapperModify.recover().length - 1]);
@@ -74,7 +75,7 @@ public class MapperModifyFactory extends MapperBaseFactory implements FieldFacto
 
     @Override
     public MapperStrategy buildStrategy(List<MapperDetail> details) {
-        if (details == null || details.size() == 0){
+        if (details == null || details.size() == 0) {
             return new ModifyNormalStrategy();
         }
         ModifyEnableStrategy strategy = new ModifyEnableStrategy();

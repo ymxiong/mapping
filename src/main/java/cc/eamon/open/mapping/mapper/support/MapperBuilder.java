@@ -1,12 +1,11 @@
 package cc.eamon.open.mapping.mapper.support;
 
+import cc.eamon.open.mapping.mapper.ClassUtil;
 import cc.eamon.open.mapping.mapper.StringUtil;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
-import cc.eamon.open.mapping.mapper.support.strategy.ExtendsStrategy;
-import cc.eamon.open.mapping.mapper.support.strategy.IgnoreStrategy;
-import cc.eamon.open.mapping.mapper.support.strategy.ModifyStrategy;
-import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.*;
+import com.alibaba.fastjson.JSONObject;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
@@ -25,6 +24,8 @@ public class MapperBuilder {
 
         // type strategies
         ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());
+        ExtraStrategy extraStrategy = (ExtraStrategy) type.getStrategies().get(MapperEnum.EXTRA.getName());
+
         if (extendsStrategy.open()) {
             typeSpec.superclass(ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         }
@@ -33,10 +34,9 @@ public class MapperBuilder {
 
         // define import items
         ClassName string = ClassName.get("java.lang", "String");
-        ClassName object = ClassName.get("java.lang", "Object");
         ClassName map = ClassName.get("java.util", "Map");
         ClassName linkedHashMap = ClassName.get("java.util", "LinkedHashMap");
-        TypeName typeOfMap = ParameterizedTypeName.get(map, string, object);
+        TypeName typeOfMap = ParameterizedTypeName.get(map, string, string);
 
         String buildMapStaticMethod = "buildMap";
         MethodSpec.Builder buildMapStaticMethodSpec = MethodSpec.methodBuilder(buildMapStaticMethod)
@@ -47,9 +47,9 @@ public class MapperBuilder {
 
         // build resultMap
         if (extendsStrategy.open()) {
-            buildMapStaticMethodSpec.addStatement("Map<String, Object> map = $T.buildMap(obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
+            buildMapStaticMethodSpec.addStatement("Map<String, String> map = $T.buildMap(obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         } else {
-            buildMapStaticMethodSpec.addStatement("Map<String, Object> map = new $T<>()", linkedHashMap);
+            buildMapStaticMethodSpec.addStatement("Map<String, String> map = new $T<>()", linkedHashMap);
         }
         buildMapStaticMethodSpec.addStatement("if (obj == null) return map");
 
@@ -60,7 +60,8 @@ public class MapperBuilder {
 
         // build obj
         if (extendsStrategy.open()) {
-            buildEntityMethodSpec.addStatement("$T obj = ($T) super.buildEntity()", self, self);
+            buildEntityMethodSpec.addStatement("$T obj = new $T()", self, self);
+            buildEntityMethodSpec.addStatement("$T.copyEntity(super.buildEntity(), obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         } else {
             buildEntityMethodSpec.addStatement("$T obj = new $T()", self, self);
         }
@@ -74,12 +75,23 @@ public class MapperBuilder {
 
         // build obj
         if (extendsStrategy.open()) {
-            parseEntityStaticMethodSpec.addStatement("$T obj = ($T) $T.parseEntity(map)", self, self, ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
+            parseEntityStaticMethodSpec.addStatement("$T obj = new $T()", self, self);
+            parseEntityStaticMethodSpec.addStatement("$T.copyEntity($T.parseEntity(map), obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()), ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         } else {
             parseEntityStaticMethodSpec.addStatement("$T obj = new $T()", self, self);
         }
         parseEntityStaticMethodSpec.addStatement("if (map == null) return obj");
 
+        // copy obj
+        String copyEntityStaticMethod = "copyEntity";
+        MethodSpec.Builder copyEntityStaticMethodSpec = MethodSpec.methodBuilder(copyEntityStaticMethod)
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addParameter(self, "from")
+                .addParameter(self, "to")
+                .returns(TypeName.VOID);
+
+        copyEntityStaticMethodSpec.addStatement("if (from == null || to == null) return");
 
         for (MapperField field : type.getMapperFieldList()) {
 
@@ -92,14 +104,15 @@ public class MapperBuilder {
             }
 
             FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                    TypeName.get(modifyStrategy.getModifyType()),
+                    ClassUtil.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
                     Modifier.PUBLIC);
             typeSpec.addField(fieldSpec.build());
 
-            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + modifyStrategy.getModifyName() + ")");
+            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName() + "))", JSONObject.class);
             buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName().replace("$", "this." + renameStrategy.getName()));
-            parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName().replace("$", "($T)map.get(\"" + renameStrategy.getName() + "\")"), modifyStrategy.getModifyType());
+            parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName().replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), $T.class)"), JSONObject.class, ClassUtil.get(modifyStrategy.getModifyType()));
+            copyEntityStaticMethodSpec.addStatement("to.set" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "(from.get" + StringUtil.firstWordToUpperCase(field.getSimpleName()) + "())");
         }
 
         // add return
@@ -111,6 +124,43 @@ public class MapperBuilder {
         typeSpec.addMethod(buildMapStaticMethodSpec.build());
         typeSpec.addMethod(buildEntityMethodSpec.build());
         typeSpec.addMethod(parseEntityStaticMethodSpec.build());
+        typeSpec.addMethod(copyEntityStaticMethodSpec.build());
+
+        if (extraStrategy.open()) {
+
+            String buildMapExtraStaticMethod = "buildMapExtra";
+            MethodSpec.Builder buildMapExtraStaticMethodSpec = MethodSpec.methodBuilder(buildMapExtraStaticMethod)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addModifiers(Modifier.STATIC)
+                    .addParameter(self, "obj")
+                    .returns(typeOfMap);
+
+
+            buildMapExtraStaticMethodSpec.addStatement("Map<String, String> map = buildMap(obj)");
+            buildMapExtraStaticMethodSpec.addStatement("if (obj == null) return map");
+
+            for (MapperField field : extraStrategy.getMapperFields()) {
+                RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
+                ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
+
+
+                FieldSpec.Builder fieldSpec = FieldSpec.builder(
+                        ClassUtil.get(modifyStrategy.getModifyType()),
+                        renameStrategy.getName(),
+                        Modifier.PUBLIC);
+                typeSpec.addField(fieldSpec.build());
+
+
+                buildMapExtraStaticMethodSpec.addParameter(ClassUtil.get(field.getQualifiedTypeName()), renameStrategy.getName());
+                buildMapExtraStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + renameStrategy.getName() + "))", JSONObject.class);
+
+            }
+            buildMapExtraStaticMethodSpec.addStatement("return map");
+
+            typeSpec.addMethod(buildMapExtraStaticMethodSpec.build());
+        }
+
+
         return typeSpec.build();
 
     }

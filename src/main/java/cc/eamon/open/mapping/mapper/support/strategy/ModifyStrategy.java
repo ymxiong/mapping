@@ -2,8 +2,6 @@ package cc.eamon.open.mapping.mapper.support.strategy;
 
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
-import javax.lang.model.type.TypeMirror;
-
 /**
  * Author: eamon
  * Email: eamon@eamon.cc
@@ -15,8 +13,8 @@ public interface ModifyStrategy extends MapperStrategy {
 
     String getRecoverName();
 
-    TypeMirror getModifyType();
+    String getModifyType();
 
-    TypeMirror getRecoverType();
+    String getRecoverType();
 
 }

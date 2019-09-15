@@ -2,7 +2,6 @@ package cc.eamon.open.mapping.mapper.support.factory;
 
 import cc.eamon.open.mapping.mapper.Mapper;
 import cc.eamon.open.mapping.mapper.StringUtil;
-import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.TypeFactory;
@@ -11,7 +10,7 @@ import cc.eamon.open.mapping.mapper.support.detail.ExtendsDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsEnableStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsNormalStrategy;
 import com.google.common.collect.Lists;
-import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Type;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
@@ -37,7 +36,7 @@ public class MapperExtendsFactory extends MapperBaseFactory implements TypeFacto
 
     @Override
     public List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper) {
-        if (!(element instanceof Symbol.ClassSymbol)) {
+        if (!(element instanceof TypeElement)) {
             return null;
         }
 
@@ -45,10 +44,11 @@ public class MapperExtendsFactory extends MapperBaseFactory implements TypeFacto
         TypeElement typeElement = (TypeElement) element;
 
 
-        Element superElement = MapperContextHolder.get().getMapperElements().get(typeElement.getSuperclass().toString());
+        Element superElement = ((Type.ClassType)typeElement.getSuperclass()).tsym;
         if (superElement == null) {
             return null;
         }
+
         Mapper superAnnotation = superElement.getAnnotation(Mapper.class);
         if (superAnnotation == null){
             return null;
@@ -81,7 +81,7 @@ public class MapperExtendsFactory extends MapperBaseFactory implements TypeFacto
 
     @Override
     public MapperStrategy buildStrategy(List<MapperDetail> details) {
-        if (details == null) {
+        if (details == null || details.size() == 0){
             return new ExtendsNormalStrategy();
         }
         ExtendsEnableStrategy strategy = new ExtendsEnableStrategy();

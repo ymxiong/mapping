@@ -2,8 +2,6 @@ package cc.eamon.open.mapping.mapper.support.detail;
 
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 
-import javax.lang.model.type.TypeMirror;
-
 /**
  * Author: eamon
  * Email: eamon@eamon.cc
@@ -11,18 +9,18 @@ import javax.lang.model.type.TypeMirror;
  */
 public class ModifyDetail implements MapperDetail {
 
-    private TypeMirror modifyType;
+    private String modifyQualifiedTypeName;
 
     private String modifyMethodName;
 
     private String recoverMethodName;
 
-    public TypeMirror getModifyType() {
-        return modifyType;
+    public String getModifyQualifiedTypeName() {
+        return modifyQualifiedTypeName;
     }
 
-    public void setModifyType(TypeMirror modifyType) {
-        this.modifyType = modifyType;
+    public void setModifyQualifiedTypeName(String modifyQualifiedTypeName) {
+        this.modifyQualifiedTypeName = modifyQualifiedTypeName;
     }
 
     public String getModifyMethodName() {

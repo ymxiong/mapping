@@ -1,10 +1,8 @@
 package cc.eamon.open.mapping.mapper.support.strategy;
 
 import cc.eamon.open.mapping.mapper.StringUtil;
-import cc.eamon.open.mapping.mapper.support.detail.ModifyDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
-
-import javax.lang.model.type.TypeMirror;
+import cc.eamon.open.mapping.mapper.support.detail.ModifyDetail;
 
 /**
  * Author: eamon
@@ -26,13 +24,13 @@ public class ModifyEnableStrategy extends MapperBaseStrategy implements ModifySt
     }
 
     @Override
-    public TypeMirror getModifyType() {
-        return detail.getModifyType();
+    public String getModifyType() {
+        return detail.getModifyQualifiedTypeName();
     }
 
     @Override
-    public TypeMirror getRecoverType() {
-        return getElementType();
+    public String getRecoverType() {
+        return getQualifiedTypeName();
     }
 
     public ModifyDetail getDetail() {

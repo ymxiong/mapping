@@ -52,7 +52,7 @@ public class MapperIgnoreFactory extends MapperBaseFactory implements FieldFacto
 
     @Override
     public MapperStrategy buildStrategy(List<MapperDetail> details) {
-        if (details == null){
+        if (details == null || details.size() == 0){
             return new IgnoreNormalStrategy();
         }
         return new IgnoreEnabledStrategy();
