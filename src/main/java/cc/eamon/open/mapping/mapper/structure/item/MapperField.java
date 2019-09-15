@@ -17,6 +17,8 @@ public class MapperField {
 
     private String qualifiedTypeName;
 
+    private Boolean list = false;
+
     private Map<String, MapperStrategy> strategies;
 
     public String getSimpleName() {
@@ -41,6 +43,14 @@ public class MapperField {
 
     public void setQualifiedTypeName(String qualifiedTypeName) {
         this.qualifiedTypeName = qualifiedTypeName;
+    }
+
+    public Boolean getList() {
+        return list;
+    }
+
+    public void setList(Boolean list) {
+        this.list = list;
     }
 
     public Map<String, MapperStrategy> getStrategies() {
