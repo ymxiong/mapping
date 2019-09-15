@@ -1,6 +1,6 @@
 package cc.eamon.open.mapping.mapper.support.strategy;
 
-import cc.eamon.open.mapping.mapper.StringUtil;
+import cc.eamon.open.mapping.mapper.util.StringUtil;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;

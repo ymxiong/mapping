@@ -1,6 +1,6 @@
 package cc.eamon.open.mapping.mapper.processor;
 
-import cc.eamon.open.mapping.ProcessingException;
+import cc.eamon.open.mapping.exception.ProcessingException;
 import cc.eamon.open.mapping.mapper.Mapper;
 import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.structure.element.MapperTypeElement;

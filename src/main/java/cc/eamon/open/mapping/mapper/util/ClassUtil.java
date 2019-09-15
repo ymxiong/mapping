@@ -1,4 +1,4 @@
-package cc.eamon.open.mapping.mapper;
+package cc.eamon.open.mapping.mapper.util;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;

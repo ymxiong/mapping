@@ -1,4 +1,4 @@
-package cc.eamon.open.mapping.mapper;
+package cc.eamon.open.mapping.mapper.util;
 
 /**
  * Author: eamon

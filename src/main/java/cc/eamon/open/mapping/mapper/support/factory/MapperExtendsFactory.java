@@ -1,7 +1,7 @@
 package cc.eamon.open.mapping.mapper.support.factory;
 
 import cc.eamon.open.mapping.mapper.Mapper;
-import cc.eamon.open.mapping.mapper.StringUtil;
+import cc.eamon.open.mapping.mapper.util.StringUtil;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.TypeFactory;

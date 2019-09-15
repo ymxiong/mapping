@@ -1,4 +1,4 @@
-package cc.eamon.open.mapping;
+package cc.eamon.open.mapping.exception;
 
 import javax.lang.model.element.Element;
 
