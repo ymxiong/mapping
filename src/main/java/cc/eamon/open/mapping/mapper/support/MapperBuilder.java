@@ -19,8 +19,7 @@ public class MapperBuilder {
 
     public static TypeSpec build(MapperType type) {
         // define new type
-        TypeSpec.Builder typeSpec = TypeSpec.classBuilder(type.getSimpleName() + StringUtil.firstWordToUpperCase(type.getMapperName()) + "Mapper");
-        typeSpec.addModifiers(Modifier.PUBLIC);
+        TypeSpec.Builder typeSpec = TypeSpec.classBuilder(type.getSimpleName() + StringUtil.firstWordToUpperCase(type.getMapperName()) + "Mapper").addModifiers(Modifier.PUBLIC);
 
         // type strategies
         ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());
@@ -30,15 +29,10 @@ public class MapperBuilder {
             typeSpec.superclass(ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         }
 
+        // define import items
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
-        // define import items
-//        ClassName string = ClassName.get("java.lang", "String");
-//        ClassName map = ClassName.get("java.util", "Map");
-//        ClassName list = ClassName.get("java.util", "List");
-//        ClassName linkedHashMap = ClassName.get("java.util", "LinkedHashMap");
-//        TypeName typeOfMap = ParameterizedTypeName.get(map, string, string);
-
+        // init: build map
         String buildMapStaticMethod = "buildMap";
         MethodSpec.Builder buildMapStaticMethodSpec = MethodSpec.methodBuilder(buildMapStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -54,6 +48,8 @@ public class MapperBuilder {
         }
         buildMapStaticMethodSpec.addStatement("if (obj == null) return map");
 
+
+        // init: build entity
         String buildEntityMethod = "buildEntity";
         MethodSpec.Builder buildEntityMethodSpec = MethodSpec.methodBuilder(buildEntityMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -65,6 +61,8 @@ public class MapperBuilder {
             buildEntityMethodSpec.addStatement("$T.copyEntity(super.buildEntity(), obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         }
 
+
+        // init: parse entity
         String parseEntityStaticMethod = "parseEntity";
         MethodSpec.Builder parseEntityStaticMethodSpec = MethodSpec.methodBuilder(parseEntityStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -79,7 +77,7 @@ public class MapperBuilder {
         }
         parseEntityStaticMethodSpec.addStatement("if (map == null) return obj");
 
-        // copy obj
+        // init: copy entity
         String copyEntityStaticMethod = "copyEntity";
         MethodSpec.Builder copyEntityStaticMethodSpec = MethodSpec.methodBuilder(copyEntityStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -123,6 +121,7 @@ public class MapperBuilder {
         typeSpec.addMethod(parseEntityStaticMethodSpec.build());
         typeSpec.addMethod(copyEntityStaticMethodSpec.build());
 
+        // init extra
         if (extraStrategy.open()) {
 
             String buildMapExtraStaticMethod = "buildMapExtra";
@@ -161,7 +160,6 @@ public class MapperBuilder {
 
             }
             buildMapExtraStaticMethodSpec.addStatement("return map");
-
             typeSpec.addMethod(buildMapExtraStaticMethodSpec.build());
         }
 
