@@ -14,13 +14,13 @@ public class ModifyEnableStrategy extends MapperBaseStrategy implements ModifySt
     private ModifyDetail detail;
 
     @Override
-    public String getModifyName() {
-        return "obj." + detail.getModifyMethodName() + "(obj.get" + StringUtils.firstWordToUpperCase(getElementName()) + "())";
+    public String getModifyName(String varName) {
+        return varName + "." + detail.getModifyMethodName() + "(" + varName + ".get" + StringUtils.firstWordToUpperCase(getElementName()) + "())";
     }
 
     @Override
-    public String getRecoverName() {
-        return "obj.set" + StringUtils.firstWordToUpperCase(getElementName()) + "(obj." + detail.getRecoverMethodName() + "($))";
+    public String getRecoverName(String varName) {
+        return varName + ".set" + StringUtils.firstWordToUpperCase(getElementName()) + "(" + varName + "." + detail.getRecoverMethodName() + "($))";
     }
 
     @Override

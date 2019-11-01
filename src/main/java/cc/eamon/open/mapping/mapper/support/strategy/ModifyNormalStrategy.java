@@ -11,13 +11,13 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 public class ModifyNormalStrategy extends MapperBaseStrategy implements ModifyStrategy {
 
     @Override
-    public String getModifyName() {
-        return "obj.get" + StringUtils.firstWordToUpperCase(getElementName()) + "()";
+    public String getModifyName(String varName) {
+        return varName + ".get" + StringUtils.firstWordToUpperCase(getElementName()) + "()";
     }
 
     @Override
-    public String getRecoverName() {
-        return "obj.set" + StringUtils.firstWordToUpperCase(getElementName()) + "($)";
+    public String getRecoverName(String varName) {
+        return varName + ".set" + StringUtils.firstWordToUpperCase(getElementName()) + "($)";
     }
 
     @Override

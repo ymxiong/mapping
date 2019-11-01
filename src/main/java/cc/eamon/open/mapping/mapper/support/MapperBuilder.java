@@ -1,5 +1,6 @@
 package cc.eamon.open.mapping.mapper.support;
 
+import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.util.ClassUtils;
 import cc.eamon.open.mapping.mapper.util.StringUtils;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
@@ -8,6 +9,7 @@ import cc.eamon.open.mapping.mapper.support.strategy.*;
 import com.alibaba.fastjson.JSONObject;
 import com.squareup.javapoet.*;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -23,7 +25,6 @@ public class MapperBuilder {
 
         // type strategies
         ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());
-        ExtraStrategy extraStrategy = (ExtraStrategy) type.getStrategies().get(MapperEnum.EXTRA.getName());
 
         if (extendsStrategy.open()) {
             typeSpec.superclass(ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
@@ -94,7 +95,7 @@ public class MapperBuilder {
             RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
             ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
 
-            if ((ignoreStrategy.ignore())) {
+            if (ignoreStrategy.ignore()) {
                 continue;
             }
 
@@ -104,9 +105,9 @@ public class MapperBuilder {
                     Modifier.PUBLIC);
             typeSpec.addField(fieldSpec.build());
 
-            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName() + "))", JSONObject.class);
-            buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName().replace("$", "this." + renameStrategy.getName()));
-            parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName().replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), $T.class)"), JSONObject.class, ClassUtils.get(modifyStrategy.getModifyType()));
+            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName("obj") + "))", JSONObject.class);
+            buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "this." + renameStrategy.getName()));
+            parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), $T.class)"), JSONObject.class, ClassUtils.get(modifyStrategy.getModifyType()));
             copyEntityStaticMethodSpec.addStatement("to.set" + StringUtils.firstWordToUpperCase(field.getSimpleName()) + "(from.get" + StringUtils.firstWordToUpperCase(field.getSimpleName()) + "())");
         }
 
@@ -120,8 +121,16 @@ public class MapperBuilder {
         typeSpec.addMethod(buildEntityMethodSpec.build());
         typeSpec.addMethod(parseEntityStaticMethodSpec.build());
         typeSpec.addMethod(copyEntityStaticMethodSpec.build());
+        buildExtra(type, typeSpec, self);
+        buildConvert(type, typeSpec, self);
 
+        return typeSpec.build();
+
+    }
+
+    private static void buildExtra(MapperType type, TypeSpec.Builder typeSpec, ClassName self) {
         // init extra
+        ExtraStrategy extraStrategy = (ExtraStrategy) type.getStrategies().get(MapperEnum.EXTRA.getName());
         if (extraStrategy.open()) {
 
             String buildMapExtraStaticMethod = "buildMapExtra";
@@ -162,9 +171,62 @@ public class MapperBuilder {
             buildMapExtraStaticMethodSpec.addStatement("return map");
             typeSpec.addMethod(buildMapExtraStaticMethodSpec.build());
         }
+    }
 
+    private static void buildConvert(MapperType type, TypeSpec.Builder typeSpec, ClassName self) {
+        // init convert
+        ConvertStrategy convertStrategy = (ConvertStrategy) type.getStrategies().get(MapperEnum.CONVERT.getName());
 
-        return typeSpec.build();
+        if (convertStrategy.open()) {
+
+            String convertMethod = "convert";
+            for (String convertStrategyType : convertStrategy.getTypes()) {
+
+                Element convertStrategyElement = MapperContextHolder.get().getMapperElements().get(convertStrategyType);
+                if (convertStrategyElement == null) {
+                    continue;
+                }
+
+                MethodSpec.Builder buildConvertAB = MethodSpec.methodBuilder(convertMethod)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addModifiers(Modifier.STATIC)
+                        .addParameter(self, "from")
+                        .addParameter(ClassUtils.get(convertStrategyType), "to")
+                        .returns(TypeName.VOID);
+                buildConvertAB.addStatement("if (from == null || to == null) return");
+
+                MethodSpec.Builder buildConvertBA = MethodSpec.methodBuilder(convertMethod)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addModifiers(Modifier.STATIC)
+                        .addParameter(ClassUtils.get(convertStrategyType), "from")
+                        .addParameter(self, "to")
+                        .returns(TypeName.VOID);
+                buildConvertBA.addStatement("if (from == null || to == null) return");
+
+                for (MapperField field : type.getMapperFieldList()) {
+                    IgnoreStrategy ignoreStrategy = (IgnoreStrategy) field.getStrategies().get(MapperEnum.IGNORE.getName());
+                    RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
+                    ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
+
+                    String fieldUpperCase = StringUtils.firstWordToUpperCase(renameStrategy.getName());
+
+                    if (!convertStrategyElement.getEnclosedElements().toString().contains(renameStrategy.getName())) {
+                        continue;
+                    }
+
+                    if (ignoreStrategy.ignore()) {
+                        continue;
+                    }
+
+                    buildConvertAB.addStatement("to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");
+                    buildConvertBA.addStatement(modifyStrategy.getRecoverName("to").replace("$", "from.get" + fieldUpperCase + "()"));
+                }
+
+                typeSpec.addMethod(buildConvertAB.build());
+                typeSpec.addMethod(buildConvertBA.build());
+            }
+
+        }
 
     }
 
