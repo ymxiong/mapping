@@ -8,12 +8,14 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 import cc.eamon.open.mapping.mapper.support.detail.ExtraDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtraEnableStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtraNormalStrategy;
+import cc.eamon.open.mapping.mapper.util.MapperUtils;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: eamon
@@ -30,8 +32,11 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
     @Override
     public List<MapperDetail> buildDetails(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper) {
         MapperExtra mapperExtra = (MapperExtra) annotation;
+
+        Map<String, Object> annotationValuesMap = MapperUtils.buildAnnotationFieldsMap(annotationMirror);
+        List<String> typeValues = MapperUtils.buildStringAnnotationValueList(annotationValuesMap, "type");
         // check annotation para length
-        if (mapperExtra.value().length == 0 || mapperExtra.name().length == 0 || mapperExtra.type().length == 0) {
+        if (mapperExtra.value().length == 0 || mapperExtra.name().length == 0 || typeValues.size() == 0) {
             return null;
         }
 
@@ -56,11 +61,11 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
             }
 
 
-            if (i >= mapperExtra.type().length) {
+            if (i >= typeValues.size()) {
                 // TODO: LOG NOT COMPATIBLE INFO
                 break;
             } else {
-                detail.setType(mapperExtra.type()[i]);
+                detail.setType(typeValues.get(i));
             }
 
             if (mapperExtra.list().length == 0) {

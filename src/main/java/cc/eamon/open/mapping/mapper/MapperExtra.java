@@ -16,7 +16,7 @@ public @interface MapperExtra {
 
     String[] name() default {};
 
-    String[] type() default {};
+    Class<?>[] type() default {};
 
     boolean[] list() default {};
 
