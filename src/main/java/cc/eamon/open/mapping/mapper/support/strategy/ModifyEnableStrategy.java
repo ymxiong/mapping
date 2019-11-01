@@ -1,6 +1,6 @@
 package cc.eamon.open.mapping.mapper.support.strategy;
 
-import cc.eamon.open.mapping.mapper.util.StringUtil;
+import cc.eamon.open.mapping.mapper.util.StringUtils;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 import cc.eamon.open.mapping.mapper.support.detail.ModifyDetail;
 
@@ -15,12 +15,12 @@ public class ModifyEnableStrategy extends MapperBaseStrategy implements ModifySt
 
     @Override
     public String getModifyName() {
-        return "obj." + detail.getModifyMethodName() + "(obj.get" + StringUtil.firstWordToUpperCase(getElementName()) + "())";
+        return "obj." + detail.getModifyMethodName() + "(obj.get" + StringUtils.firstWordToUpperCase(getElementName()) + "())";
     }
 
     @Override
     public String getRecoverName() {
-        return "obj.set" + StringUtil.firstWordToUpperCase(getElementName()) + "(obj." + detail.getRecoverMethodName() + "($))";
+        return "obj.set" + StringUtils.firstWordToUpperCase(getElementName()) + "(obj." + detail.getRecoverMethodName() + "($))";
     }
 
     @Override

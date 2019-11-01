@@ -1,6 +1,6 @@
 package cc.eamon.open.mapping.mapper.support.strategy;
 
-import cc.eamon.open.mapping.mapper.util.StringUtil;
+import cc.eamon.open.mapping.mapper.util.StringUtils;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 
 /**
@@ -20,6 +20,6 @@ public class RenameNormalStrategy extends MapperBaseStrategy implements RenameSt
      */
     @Override
     public String getName() {
-        return StringUtil.firstWordToLowerCase(getElementName());
+        return StringUtils.firstWordToLowerCase(getElementName());
     }
 }

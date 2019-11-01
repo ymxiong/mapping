@@ -8,7 +8,7 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 import cc.eamon.open.mapping.mapper.support.detail.ExtendsDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsEnableStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsNormalStrategy;
-import cc.eamon.open.mapping.mapper.util.StringUtil;
+import cc.eamon.open.mapping.mapper.util.StringUtils;
 import com.google.common.collect.Lists;
 import com.sun.tools.javac.code.Type;
 
@@ -71,7 +71,7 @@ public class MapperExtendsFactory extends MapperBaseFactory implements TypeFacto
 
             detail.setPackageName(((PackageElement)superElement.getEnclosingElement()).getQualifiedName().toString());
 
-            detail.setSuperMapperName(superElement.getSimpleName().toString() + StringUtil.firstWordToUpperCase(mapper) + "Mapper");
+            detail.setSuperMapperName(superElement.getSimpleName().toString() + StringUtils.firstWordToUpperCase(mapper) + "Mapper");
 
             // new detail
             details.add(detail);

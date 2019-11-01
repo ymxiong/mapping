@@ -1,6 +1,6 @@
 package cc.eamon.open.mapping.mapper.support.strategy;
 
-import cc.eamon.open.mapping.mapper.util.StringUtil;
+import cc.eamon.open.mapping.mapper.util.StringUtils;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
@@ -40,7 +40,7 @@ public class ExtraEnableStrategy extends MapperBaseStrategy implements ExtraStra
         details.forEach((detail) -> {
             MapperField field = new MapperField();
             field.setMapperName(detail.getMapper());
-            field.setSimpleName(StringUtil.classNameFromQualifiedName(detail.getName()));
+            field.setSimpleName(StringUtils.classNameFromQualifiedName(detail.getName()));
             field.setQualifiedTypeName(detail.getType());
             field.setList(detail.getList());
 

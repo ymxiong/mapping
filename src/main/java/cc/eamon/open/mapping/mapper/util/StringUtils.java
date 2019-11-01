@@ -5,7 +5,7 @@ package cc.eamon.open.mapping.mapper.util;
  * Email: eamon@eamon.cc
  * Time: 2019-07-29 02:58:26
  */
-public class StringUtil {
+public class StringUtils {
 
     public static String firstWordToUpperCase(String input){
         if (input == null){

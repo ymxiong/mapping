@@ -10,10 +10,10 @@ import com.squareup.javapoet.TypeName;
  * Email: eamon@eamon.cc
  * Time: 2019-09-15 03:02:15
  */
-public class ClassUtil {
+public class ClassUtils {
 
     public static ClassName get(String qualifiedName){
-        return ClassName.get(StringUtil.packageNameFromQualifiedName(qualifiedName), StringUtil.classNameFromQualifiedName(qualifiedName));
+        return ClassName.get(StringUtils.packageNameFromQualifiedName(qualifiedName), StringUtils.classNameFromQualifiedName(qualifiedName));
     }
 
     public static ClassName getString(){
