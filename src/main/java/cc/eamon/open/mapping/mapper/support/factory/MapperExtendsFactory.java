@@ -8,9 +8,9 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 import cc.eamon.open.mapping.mapper.support.detail.ExtendsDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsEnableStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsNormalStrategy;
+import cc.eamon.open.mapping.mapper.util.MapperUtils;
 import cc.eamon.open.mapping.mapper.util.StringUtils;
 import com.google.common.collect.Lists;
-import com.sun.tools.javac.code.Type;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -45,7 +45,7 @@ public class MapperExtendsFactory extends MapperBaseFactory implements TypeFacto
         TypeElement typeElement = (TypeElement) element;
 
 
-        Element superElement = ((Type.ClassType)typeElement.getSuperclass()).tsym;
+        Element superElement = MapperUtils.loadSuperTypeElement(typeElement);
         if (superElement == null) {
             return null;
         }

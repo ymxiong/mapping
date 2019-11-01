@@ -9,7 +9,7 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 import cc.eamon.open.mapping.mapper.support.detail.ModifyDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.ModifyEnableStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ModifyNormalStrategy;
-import com.sun.tools.javac.code.Type;
+import cc.eamon.open.mapping.mapper.util.MapperUtils;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -57,9 +57,11 @@ public class MapperModifyFactory extends MapperBaseFactory implements FieldFacto
             }
 
             // TODO: check method exist
-
-            Type.MethodType methodType = (Type.MethodType) MapperContextHolder.get().getMethodMap().get(detail.getModifyMethodName()).asType();
-            detail.setModifyQualifiedTypeName(methodType.getReturnType().toString());
+            detail.setModifyQualifiedTypeName(
+                    MapperUtils.loadMethodReturnTypeName(
+                            MapperContextHolder.get().getMethodMap().get(detail.getModifyMethodName())
+                    )
+            );
 
             if (i >= mapperModify.recover().length) {
                 detail.setRecoverMethodName(mapperModify.recover()[mapperModify.recover().length - 1]);
