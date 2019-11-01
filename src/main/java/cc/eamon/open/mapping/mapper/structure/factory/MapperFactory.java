@@ -2,6 +2,7 @@ package cc.eamon.open.mapping.mapper.structure.factory;
 
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 
@@ -13,17 +14,21 @@ import java.lang.annotation.Annotation;
 public interface MapperFactory {
 
     /**
-     * Build detail
-     * @param annotation java annotation
-     * @param element javax model element
-     * @return detail
-     */
-    MapperStrategy build(Annotation annotation, Element element, String mapper);
-
-    /**
      * Is value value repeat allowed
+     *
      * @return allowValueRepeat
      */
     Boolean allowValueRepeat();
+
+    /**
+     * Build detail
+     *
+     * @param annotation java annotation
+     * @param element    javax model element
+     * @return detail
+     */
+    MapperStrategy build(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper);
+
+
 
 }

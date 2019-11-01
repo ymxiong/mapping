@@ -1,14 +1,15 @@
 package cc.eamon.open.mapping.mapper.support.factory;
 
 import cc.eamon.open.mapping.mapper.MapperIgnore;
-import cc.eamon.open.mapping.mapper.support.detail.IgnoreDetail;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.FieldFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
-import cc.eamon.open.mapping.mapper.support.strategy.IgnoreNormalStrategy;
+import cc.eamon.open.mapping.mapper.support.detail.IgnoreDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.IgnoreEnabledStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.IgnoreNormalStrategy;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class MapperIgnoreFactory extends MapperBaseFactory implements FieldFacto
     }
 
     @Override
-    public List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper) {
+    public List<MapperDetail> buildDetails(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper) {
         MapperIgnore mapperIgnore = (MapperIgnore) annotation;
         // check annotation para length
         if (mapperIgnore.value().length == 0) {

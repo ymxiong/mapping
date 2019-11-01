@@ -3,11 +3,9 @@ package cc.eamon.open.mapping.mapper.structure.factory;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
+import cc.eamon.open.mapping.mapper.util.MapperUtils;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +18,17 @@ import java.util.Map;
  */
 public abstract class MapperBaseFactory implements MapperFactory {
 
+    public abstract List<MapperDetail> buildDetails(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper);
+
+    public abstract MapperStrategy buildStrategy(List<MapperDetail> details);
+
     @Override
-    public MapperStrategy build(Annotation annotation, Element element, String mapper) {
+    public MapperStrategy build(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper) {
         // check annotation null
         if (annotation == null) {
             return buildStrategy(null, element, mapper);
         }
-        List<MapperDetail> details = buildDetails(annotation, element, mapper);
+        List<MapperDetail> details = buildDetails(annotation, annotationMirror, element, mapper);
 
         // check details length
         if (details == null || 0 == details.size()) {
@@ -50,12 +52,6 @@ public abstract class MapperBaseFactory implements MapperFactory {
         }
         return strategy;
     }
-
-    public abstract MapperStrategy buildStrategy(List<MapperDetail> details);
-
-
-    public abstract List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper);
-
 
     /**
      * Build strategies
@@ -83,8 +79,11 @@ public abstract class MapperBaseFactory implements MapperFactory {
             // find value annotation info
             Annotation annotation = element.getAnnotation(mapperEnum.getType());
 
+            // find value annotation mirror info
+            AnnotationMirror annotationMirror = MapperUtils.buildAnnotationMirrorByTypeName(element.getAnnotationMirrors(), mapperEnum.getType().getName());
+
             // build detail
-            MapperStrategy strategy = factory.build(annotation, element, mapper);
+            MapperStrategy strategy = factory.build(annotation, annotationMirror, element, mapper);
 
             // add detail
             strategies.put(mapperEnum.getName(), strategy);

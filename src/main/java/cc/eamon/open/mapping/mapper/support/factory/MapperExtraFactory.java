@@ -9,6 +9,7 @@ import cc.eamon.open.mapping.mapper.support.detail.ExtraDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtraEnableStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtraNormalStrategy;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
     }
 
     @Override
-    public List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper) {
+    public List<MapperDetail> buildDetails(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper) {
         MapperExtra mapperExtra = (MapperExtra) annotation;
         // check annotation para length
         if (mapperExtra.value().length == 0 || mapperExtra.name().length == 0 || mapperExtra.type().length == 0) {

@@ -16,6 +16,6 @@ public @interface MapperConvert {
 
     String[] value() default {};
 
-    String[] type() default {};
+    Class<?>[] type() default {};
 
 }

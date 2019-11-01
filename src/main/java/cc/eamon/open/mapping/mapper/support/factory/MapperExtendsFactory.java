@@ -1,7 +1,6 @@
 package cc.eamon.open.mapping.mapper.support.factory;
 
 import cc.eamon.open.mapping.mapper.Mapper;
-import cc.eamon.open.mapping.mapper.util.StringUtil;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperBaseFactory;
 import cc.eamon.open.mapping.mapper.structure.factory.TypeFactory;
@@ -9,9 +8,11 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 import cc.eamon.open.mapping.mapper.support.detail.ExtendsDetail;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsEnableStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsNormalStrategy;
+import cc.eamon.open.mapping.mapper.util.StringUtil;
 import com.google.common.collect.Lists;
 import com.sun.tools.javac.code.Type;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -35,7 +36,7 @@ public class MapperExtendsFactory extends MapperBaseFactory implements TypeFacto
     }
 
     @Override
-    public List<MapperDetail> buildDetails(Annotation annotation, Element element, String mapper) {
+    public List<MapperDetail> buildDetails(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper) {
         if (!(element instanceof TypeElement)) {
             return null;
         }
