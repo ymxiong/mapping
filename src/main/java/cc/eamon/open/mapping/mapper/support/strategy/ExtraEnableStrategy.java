@@ -41,7 +41,7 @@ public class ExtraEnableStrategy extends MapperBaseStrategy implements ExtraStra
             MapperField field = new MapperField();
             field.setMapperName(detail.getMapper());
             field.setSimpleName(StringUtils.classNameFromQualifiedName(detail.getName()));
-            field.setQualifiedTypeName(detail.getType());
+            field.setType(detail.getType());
             field.setList(detail.getList());
 
             Map<String, MapperStrategy> strategies = new HashMap<>();
@@ -55,9 +55,9 @@ public class ExtraEnableStrategy extends MapperBaseStrategy implements ExtraStra
             ignoreStrategy.setMapper(detail.getMapper());
             modifyStrategy.setMapper(detail.getMapper());
             renameStrategy.setMapper(detail.getMapper());
-            ignoreStrategy.setQualifiedTypeName(field.getQualifiedTypeName());
-            modifyStrategy.setQualifiedTypeName(field.getQualifiedTypeName());
-            renameStrategy.setQualifiedTypeName(field.getQualifiedTypeName());
+            ignoreStrategy.setType(field.getType());
+            modifyStrategy.setType(field.getType());
+            renameStrategy.setType(field.getType());
             strategies.put(MapperEnum.IGNORE.getName(), ignoreStrategy);
             strategies.put(MapperEnum.MODIFY.getName(), modifyStrategy);
             strategies.put(MapperEnum.RENAME.getName(), renameStrategy);

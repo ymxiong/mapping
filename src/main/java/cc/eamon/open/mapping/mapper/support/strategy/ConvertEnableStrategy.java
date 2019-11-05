@@ -3,6 +3,7 @@ package cc.eamon.open.mapping.mapper.support.strategy;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 import cc.eamon.open.mapping.mapper.support.detail.ConvertDetail;
 
+import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class ConvertEnableStrategy extends MapperBaseStrategy implements Convert
     }
 
     @Override
-    public List<String> getTypes() {
-        List<String> types = new ArrayList<>();
+    public List<TypeMirror> getTypes() {
+        List<TypeMirror> types = new ArrayList<>();
         details.forEach(detail-> types.add(detail.getType()));
         return types;
     }

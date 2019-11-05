@@ -36,8 +36,8 @@ public class ClassUtils {
         return ParameterizedTypeName.get(getMap(), getString(), getString());
     }
 
-    public static TypeName getParameterizedList(ClassName className){
-        return ParameterizedTypeName.get(getList(), className);
+    public static TypeName getParameterizedList(TypeName typeName){
+        return ParameterizedTypeName.get(getList(), typeName);
     }
 
 }

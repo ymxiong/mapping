@@ -48,7 +48,7 @@ public abstract class MapperBaseFactory implements MapperFactory {
         if (strategy != null) {
             strategy.setMapper(mapper);
             strategy.setElementName(element.getSimpleName().toString());
-            strategy.setQualifiedTypeName(element.asType().toString());
+            strategy.setType(element.asType());
         }
         return strategy;
     }

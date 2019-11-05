@@ -2,6 +2,7 @@ package cc.eamon.open.mapping.mapper.support.strategy;
 
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
+import javax.lang.model.type.TypeMirror;
 import java.util.List;
 
 /**
@@ -13,6 +14,6 @@ public interface ConvertStrategy extends MapperStrategy {
 
     boolean open();
 
-    List<String> getTypes();
+    List<TypeMirror> getTypes();
 
 }

@@ -1,16 +1,19 @@
 package cc.eamon.open.mapping.mapper.support;
 
 import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
-import cc.eamon.open.mapping.mapper.util.ClassUtils;
-import cc.eamon.open.mapping.mapper.util.StringUtils;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.strategy.*;
+import cc.eamon.open.mapping.mapper.util.ClassUtils;
+import cc.eamon.open.mapping.mapper.util.MapperUtils;
+import cc.eamon.open.mapping.mapper.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeMirror;
 
 /**
  * Author: eamon
@@ -100,14 +103,20 @@ public class MapperBuilder {
             }
 
             FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                    ClassUtils.get(modifyStrategy.getModifyType()),
+                    TypeName.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
                     Modifier.PUBLIC);
             typeSpec.addField(fieldSpec.build());
 
             buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName("obj") + "))", JSONObject.class);
             buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "this." + renameStrategy.getName()));
-            parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), $T.class)"), JSONObject.class, ClassUtils.get(modifyStrategy.getModifyType()));
+            if (MapperUtils.loadTypeArguments(modifyStrategy.getModifyType()).size()>0){
+                parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), new $T<$T>(){})"),
+                        JSONObject.class, TypeReference.class, ClassName.get(modifyStrategy.getModifyType()));
+            }else {
+                parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), $T.class)"),
+                        JSONObject.class, TypeName.get(modifyStrategy.getModifyType()));
+            }
             copyEntityStaticMethodSpec.addStatement("to.set" + StringUtils.firstWordToUpperCase(field.getSimpleName()) + "(from.get" + StringUtils.firstWordToUpperCase(field.getSimpleName()) + "())");
         }
 
@@ -151,18 +160,18 @@ public class MapperBuilder {
 
                 if (field.getList()) {
                     FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                            ClassUtils.getParameterizedList(ClassUtils.get(modifyStrategy.getModifyType())),
+                            ClassUtils.getParameterizedList(TypeName.get(modifyStrategy.getModifyType())),
                             renameStrategy.getName(),
                             Modifier.PUBLIC);
                     typeSpec.addField(fieldSpec.build());
-                    buildMapExtraStaticMethodSpec.addParameter(ClassUtils.getParameterizedList(ClassUtils.get(field.getQualifiedTypeName())), renameStrategy.getName());
+                    buildMapExtraStaticMethodSpec.addParameter(ClassUtils.getParameterizedList(TypeName.get(field.getType())), renameStrategy.getName());
                 } else {
                     FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                            ClassUtils.get(modifyStrategy.getModifyType()),
+                            TypeName.get(modifyStrategy.getModifyType()),
                             renameStrategy.getName(),
                             Modifier.PUBLIC);
                     typeSpec.addField(fieldSpec.build());
-                    buildMapExtraStaticMethodSpec.addParameter(ClassUtils.get(field.getQualifiedTypeName()), renameStrategy.getName());
+                    buildMapExtraStaticMethodSpec.addParameter(TypeName.get(field.getType()), renameStrategy.getName());
                 }
 
                 buildMapExtraStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + renameStrategy.getName() + "))", JSONObject.class);
@@ -180,9 +189,9 @@ public class MapperBuilder {
         if (convertStrategy.open()) {
 
             String convertMethod = "convert";
-            for (String convertStrategyType : convertStrategy.getTypes()) {
+            for (TypeMirror convertStrategyType : convertStrategy.getTypes()) {
 
-                Element convertStrategyElement = MapperContextHolder.get().getMapperElements().get(convertStrategyType);
+                Element convertStrategyElement = MapperContextHolder.get().getMapperElements().get(convertStrategyType.toString());
                 if (convertStrategyElement == null) {
                     continue;
                 }
@@ -191,14 +200,14 @@ public class MapperBuilder {
                         .addModifiers(Modifier.PUBLIC)
                         .addModifiers(Modifier.STATIC)
                         .addParameter(self, "from")
-                        .addParameter(ClassUtils.get(convertStrategyType), "to")
+                        .addParameter(TypeName.get(convertStrategyType), "to")
                         .returns(TypeName.VOID);
                 buildConvertAB.addStatement("if (from == null || to == null) return");
 
                 MethodSpec.Builder buildConvertBA = MethodSpec.methodBuilder(convertMethod)
                         .addModifiers(Modifier.PUBLIC)
                         .addModifiers(Modifier.STATIC)
-                        .addParameter(ClassUtils.get(convertStrategyType), "from")
+                        .addParameter(TypeName.get(convertStrategyType), "from")
                         .addParameter(self, "to")
                         .returns(TypeName.VOID);
                 buildConvertBA.addStatement("if (from == null || to == null) return");

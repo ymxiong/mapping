@@ -2,6 +2,8 @@ package cc.eamon.open.mapping.mapper.support.detail;
 
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 
+import javax.lang.model.type.TypeMirror;
+
 /**
  * Author: eamon
  * Email: eamon@eamon.cc
@@ -9,13 +11,13 @@ import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
  */
 public class ConvertDetail implements MapperDetail {
 
-    private String type;
+    private TypeMirror type;
 
-    public String getType() {
+    public TypeMirror getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TypeMirror type) {
         this.type = type;
     }
 }

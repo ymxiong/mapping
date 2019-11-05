@@ -57,10 +57,8 @@ public class MapperModifyFactory extends MapperBaseFactory implements FieldFacto
             }
 
             // TODO: check method exist
-            detail.setModifyQualifiedTypeName(
-                    MapperUtils.loadMethodReturnTypeName(
-                            MapperContextHolder.get().getMethodMap().get(detail.getModifyMethodName())
-                    )
+            detail.setModifyType(MapperUtils.loadMethodReturnTypeName(
+                    MapperContextHolder.get().getMethodMap().get(detail.getModifyMethodName()))
             );
 
             if (i >= mapperModify.recover().length) {

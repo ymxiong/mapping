@@ -3,6 +3,7 @@ package cc.eamon.open.mapping.mapper.util;
 import com.sun.tools.javac.code.Type;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,20 +42,22 @@ public class MapperUtils {
      * @param key                 filter key
      * @return string values
      */
-    public static List<String> buildStringAnnotationValueList(Map<String, Object> annotationValuesMap, String key) {
-        List<String> stringAnnotationValuesList = new ArrayList<>();
+    public static List<TypeMirror> buildAnnotationValuesToTypeMirrorList(Map<String, Object> annotationValuesMap, String key) {
+        List<TypeMirror> typeMirrorList = new ArrayList<>();
         if (annotationValuesMap.get(key) == null) {
-            return stringAnnotationValuesList;
+            return typeMirrorList;
         }
 
         // build target field key to string list
         if (annotationValuesMap.get(key) instanceof List) {
             List annotationValueList = (List) annotationValuesMap.get(key);
             for (Object annotationValueObject : annotationValueList) {
-                stringAnnotationValuesList.add(((AnnotationValue) annotationValueObject).getValue().toString());
+                if (((AnnotationValue) annotationValueObject).getValue() instanceof TypeMirror) {
+                    typeMirrorList.add((TypeMirror) ((AnnotationValue) annotationValueObject).getValue());
+                }
             }
         }
-        return stringAnnotationValuesList;
+        return typeMirrorList;
     }
 
     /**
@@ -84,8 +87,18 @@ public class MapperUtils {
      * @param typeElement typeElement
      * @return element
      */
-    public static Element loadSuperTypeElement(TypeElement typeElement) {
-        return ((Type.ClassType) typeElement.getSuperclass()).tsym;
+    public static TypeElement loadSuperTypeElement(TypeElement typeElement) {
+        return (TypeElement) ((Type.ClassType) typeElement.getSuperclass()).tsym;
+    }
+
+    /**
+     * load type arguments of a typeMirror
+     *
+     * @param typeMirror typeMirror
+     * @return list of type mirror
+     */
+    public static List<TypeMirror> loadTypeArguments(TypeMirror typeMirror) {
+        return new ArrayList<>(((Type.ClassType) typeMirror).getTypeArguments());
     }
 
     /**
@@ -94,9 +107,9 @@ public class MapperUtils {
      * @param executableElement executableElement
      * @return method return object type name
      */
-    public static String loadMethodReturnTypeName(ExecutableElement executableElement) {
+    public static TypeMirror loadMethodReturnTypeName(ExecutableElement executableElement) {
         Type.MethodType methodType = (Type.MethodType) executableElement.asType();
-        return methodType.getReturnType().toString();
+        return methodType.getReturnType().asMethodType();
     }
 
 }

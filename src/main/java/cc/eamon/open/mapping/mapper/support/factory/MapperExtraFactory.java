@@ -12,6 +12,7 @@ import cc.eamon.open.mapping.mapper.util.MapperUtils;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
         MapperExtra mapperExtra = (MapperExtra) annotation;
 
         Map<String, Object> annotationValuesMap = MapperUtils.buildAnnotationFieldsMap(annotationMirror);
-        List<String> typeValues = MapperUtils.buildStringAnnotationValueList(annotationValuesMap, "type");
+        List<TypeMirror> typeValues = MapperUtils.buildAnnotationValuesToTypeMirrorList(annotationValuesMap, "type");
         // check annotation para length
         if (mapperExtra.value().length == 0 || mapperExtra.name().length == 0 || typeValues.size() == 0) {
             return null;

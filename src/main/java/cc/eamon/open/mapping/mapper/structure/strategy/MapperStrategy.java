@@ -1,5 +1,7 @@
 package cc.eamon.open.mapping.mapper.structure.strategy;
 
+import javax.lang.model.type.TypeMirror;
+
 /**
  * strategy of value running logic
  * <p>
@@ -38,12 +40,12 @@ public interface MapperStrategy {
      * get element type
      * @return element type
      */
-    String getQualifiedTypeName();
+    TypeMirror getType();
 
     /**
      * set element type
      * @param type of element
      */
-    void setQualifiedTypeName(String type);
+    void setType(TypeMirror type);
 
 }

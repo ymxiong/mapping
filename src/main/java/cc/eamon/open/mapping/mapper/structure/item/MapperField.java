@@ -2,6 +2,7 @@ package cc.eamon.open.mapping.mapper.structure.item;
 
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 
+import javax.lang.model.type.TypeMirror;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ public class MapperField {
 
     private String mapperName;
 
-    private String qualifiedTypeName;
+    private TypeMirror type;
 
     private Boolean list = false;
 
@@ -37,12 +38,12 @@ public class MapperField {
         this.mapperName = mapperName;
     }
 
-    public String getQualifiedTypeName() {
-        return qualifiedTypeName;
+    public TypeMirror getType() {
+        return type;
     }
 
-    public void setQualifiedTypeName(String qualifiedTypeName) {
-        this.qualifiedTypeName = qualifiedTypeName;
+    public void setType(TypeMirror type) {
+        this.type = type;
     }
 
     public Boolean getList() {
