@@ -50,7 +50,7 @@ public class MapperTypeElement {
 
         // store field info
         for (Element elem : typeElement.getEnclosedElements()) {
-            if (elem.getKind().isField()) {
+            if (elem.getKind().isField() && !elem.getModifiers().contains(Modifier.STATIC)) {
                 MapperContextHolder.get().getFieldMap().put(elem.getSimpleName().toString(), (VariableElement) elem);
             }
         }
