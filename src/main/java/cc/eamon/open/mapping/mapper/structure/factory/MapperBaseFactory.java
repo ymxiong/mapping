@@ -1,9 +1,11 @@
 package cc.eamon.open.mapping.mapper.structure.factory;
 
-import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.structure.detail.MapperDetail;
 import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
+import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.util.MapperUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.*;
 import java.lang.annotation.Annotation;
@@ -21,6 +23,8 @@ public abstract class MapperBaseFactory implements MapperFactory {
     public abstract List<MapperDetail> buildDetails(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper);
 
     public abstract MapperStrategy buildStrategy(List<MapperDetail> details);
+
+    protected static Logger logger = LoggerFactory.getLogger(MapperBaseFactory.class);
 
     @Override
     public MapperStrategy build(Annotation annotation, AnnotationMirror annotationMirror, Element element, String mapper) {
@@ -88,6 +92,8 @@ public abstract class MapperBaseFactory implements MapperFactory {
             // add detail
             strategies.put(mapperEnum.getName(), strategy);
         }
+
+        logger.info("Factory strategy of element:[" + element.getSimpleName() + "]");
         return strategies;
     }
 

@@ -1,8 +1,32 @@
 # Mapping
 
-## 目标
+实体关系映射配置化生成框架。
 
-使用 `@Mapper`  `@MapperIgnore`  `@MapperRename`  `@MapperModify`  和 `@MapperExtra`  注解简化实体控制系统，这些注解可配合使用，用于修饰、改造、捆绑实体属性信息、便于提供给前端人员处理，也便于后台配置式管理。
+过去几年里，微服务架构逐渐兴起，互联网数字化进程发展迅速。快速完成服务间实体沟通，前后台模型沟通是重要的基础能力建设。
+
+Mapping框架通过自动生成映射代码，实现实体关系的配置化打通。
+
+## 功能目录
+
+提供`@Mapper` `@MapperIgnore` `@MapperRename` `@MapperModify` `@MapperExtra` `@MapperConvert`和`@MapperDoc`注解简化实体控制系统，这些注解可配合使用，用于修饰、改造、捆绑实体属性信息、用于提供给前端人员处理，也用于后台配置式管理和服间打通。
+
+### 类注解
+
++ @Mapper
++ @MapperExtra
++ @MapperConvert
++ @MapperDoc
++ @Mapping（FUTURE）
+
+### 域注解
+
++ @MapperIgnore
++ @MapperRename
++ @MapperModify
+
+###方法注解（FUTURE）
+
+
 
 ## 安装
 
@@ -16,7 +40,7 @@
 </dependency>
 ```
 
-## 使用
+## 使用说明
 
 ### 开始
 
@@ -274,7 +298,7 @@ public class UserUpdateMapper {
 
 系统自动生成getMapWithExtra()方法，参数列表中多出extra字段。
 
-## 开发细节
+## 开发说明
 
 ### 创建编译时注解
 

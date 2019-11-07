@@ -6,6 +6,8 @@ import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.structure.element.MapperTypeElement;
 import cc.eamon.open.mapping.mapper.support.MapperBuilder;
 import com.squareup.javapoet.JavaFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -30,6 +32,8 @@ public class MapperProcessor extends AbstractProcessor {
     private Elements elementUtils;
     private Filer filer;
     private Messager messager;
+
+    private static Logger logger = LoggerFactory.getLogger(MapperProcessor.class);
 
     public MapperProcessor() {
     }
@@ -59,12 +63,14 @@ public class MapperProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        try {
-            // 扫描类 过滤掉非类上注解
-            Map<String, Element> mapperElements = new HashMap<>();
-            roundEnv.getElementsAnnotatedWith(Mapper.class).forEach((element)-> mapperElements.put(((TypeElement)element).getQualifiedName().toString(), element));
 
-            for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
+        // 扫描类 过滤掉非类上注解
+        Map<String, Element> mapperElements = new HashMap<>();
+        roundEnv.getElementsAnnotatedWith(Mapper.class).forEach((element) -> mapperElements.put(((TypeElement) element).getQualifiedName().toString(), element));
+
+        logger.info("Mapping elements: " + mapperElements.values().toString());
+        for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
+            try {
                 if (elem.getKind() != ElementKind.CLASS) {
                     throw new ProcessingException(elem, "Only classes can be annotated with @%s", Mapper.class.getSimpleName());
                 }
@@ -75,6 +81,7 @@ public class MapperProcessor extends AbstractProcessor {
                 PackageElement packageElement = elementUtils.getPackageOf(typeElement);
 
                 // 建立mapperElement
+                logger.info("Mapping init context for " + elem.getSimpleName());
                 MapperContextHolder.init();
                 MapperContextHolder.get().getMapperElements().putAll(mapperElements);
                 MapperTypeElement mapperElement = new MapperTypeElement(packageElement, typeElement);
@@ -83,14 +90,15 @@ public class MapperProcessor extends AbstractProcessor {
                             try {
                                 JavaFile.builder(mapperType.getPackageName(), MapperBuilder.build(mapperType)).build().writeTo(filer);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                logger.error("Mapping type build error:" + elem.getSimpleName() + "-" + mapperType.getQualifiedName() + "-" + e.toString());
                             }
                         }
                 );
                 MapperContextHolder.clear();
+                logger.info("Mapping clear context for " + elem.getSimpleName());
+            } catch (Exception e) {
+                logger.error("Mapping element build error: " + elem.getSimpleName() + "-" + e.toString());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return false;
     }

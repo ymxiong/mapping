@@ -10,6 +10,8 @@ import cc.eamon.open.mapping.mapper.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.squareup.javapoet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -21,6 +23,8 @@ import javax.lang.model.type.TypeMirror;
  * Time: 2019-09-14 18:21:02
  */
 public class MapperBuilder {
+
+    private static Logger logger = LoggerFactory.getLogger(MapperBuilder.class);
 
     public static TypeSpec build(MapperType type) {
         // define new type
@@ -37,6 +41,7 @@ public class MapperBuilder {
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
         // init: build map
+        logger.info("Mapping build init buildMap:" + type.getQualifiedName());
         String buildMapStaticMethod = "buildMap";
         MethodSpec.Builder buildMapStaticMethodSpec = MethodSpec.methodBuilder(buildMapStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -54,6 +59,7 @@ public class MapperBuilder {
 
 
         // init: build entity
+        logger.info("Mapping build init buildEntity:" + type.getQualifiedName());
         String buildEntityMethod = "buildEntity";
         MethodSpec.Builder buildEntityMethodSpec = MethodSpec.methodBuilder(buildEntityMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -67,6 +73,7 @@ public class MapperBuilder {
 
 
         // init: parse entity
+        logger.info("Mapping build init parseEntity:" + type.getQualifiedName());
         String parseEntityStaticMethod = "parseEntity";
         MethodSpec.Builder parseEntityStaticMethodSpec = MethodSpec.methodBuilder(parseEntityStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -82,6 +89,7 @@ public class MapperBuilder {
         parseEntityStaticMethodSpec.addStatement("if (map == null) return obj");
 
         // init: copy entity
+        logger.info("Mapping build init copyEntity:" + type.getQualifiedName());
         String copyEntityStaticMethod = "copyEntity";
         MethodSpec.Builder copyEntityStaticMethodSpec = MethodSpec.methodBuilder(copyEntityStaticMethod)
                 .addModifiers(Modifier.PUBLIC)
@@ -142,6 +150,7 @@ public class MapperBuilder {
         ExtraStrategy extraStrategy = (ExtraStrategy) type.getStrategies().get(MapperEnum.EXTRA.getName());
         if (extraStrategy.open()) {
 
+            logger.info("Mapping build init buildMapExtra:" + type.getQualifiedName());
             String buildMapExtraStaticMethod = "buildMapExtra";
             MethodSpec.Builder buildMapExtraStaticMethodSpec = MethodSpec.methodBuilder(buildMapExtraStaticMethod)
                     .addModifiers(Modifier.PUBLIC)
@@ -188,6 +197,7 @@ public class MapperBuilder {
 
         if (convertStrategy.open()) {
 
+            logger.info("Mapping build init convert:" + type.getQualifiedName());
             String convertMethod = "convert";
             for (TypeMirror convertStrategyType : convertStrategy.getTypes()) {
 
@@ -228,6 +238,7 @@ public class MapperBuilder {
                     }
 
                     if (!modifyStrategy.getModifyType().toString().equals(field.getType().toString())) {
+                        logger.warn("Mapping build convert type not fit, try to convert:" + modifyStrategy.getModifyType().toString() + " to " + field.getType().toString());
                         String fixme = "// FIXME: " + type.getQualifiedName() + "[" + renameStrategy.getElementName() + "] do not fit " + convertStrategyType.toString() + "[" + renameStrategy.getElementName() + "]";
                         buildConvertAB.addStatement(fixme);
                         buildConvertAB.addStatement("// to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");

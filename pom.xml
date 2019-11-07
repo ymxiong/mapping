@@ -16,6 +16,7 @@
         <lombok-version>1.18.2</lombok-version>
         <guava-version>27.0.1-jre</guava-version>
         <fastjson-version>1.2.60</fastjson-version>
+        <slf4j-version>1.7.26</slf4j-version>
     </properties>
 
     <parent>
@@ -125,6 +126,14 @@
             <version>${fastjson-version}</version>
         </dependency>
         <!-- end of fastjson-->
+
+        <!-- slf4j api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-version}</version>
+        </dependency>
+        <!-- end of slf4j api-->
 
     </dependencies>
 
