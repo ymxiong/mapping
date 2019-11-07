@@ -239,7 +239,7 @@ public class MapperBuilder {
 
                     if (!modifyStrategy.getModifyType().toString().equals(field.getType().toString())) {
                         logger.warn("Mapping build convert type not fit, try to convert:" + modifyStrategy.getModifyType().toString() + " to " + field.getType().toString());
-                        String fixme = "// FIXME: " + type.getQualifiedName() + "[" + renameStrategy.getElementName() + "] do not fit " + convertStrategyType.toString() + "[" + renameStrategy.getElementName() + "]";
+                        String fixme = "// FIXME: " + type.getQualifiedName() + "[" + renameStrategy.getElementName() + "] do not fit " + convertStrategyType.toString() + "[" + renameStrategy.getName() + "]";
                         buildConvertAB.addStatement(fixme);
                         buildConvertAB.addStatement("// to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");
                         buildConvertBA.addStatement(fixme);
