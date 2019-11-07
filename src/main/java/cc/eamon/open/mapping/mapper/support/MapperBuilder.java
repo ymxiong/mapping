@@ -110,10 +110,10 @@ public class MapperBuilder {
 
             buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName("obj") + "))", JSONObject.class);
             buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "this." + renameStrategy.getName()));
-            if (MapperUtils.loadTypeArguments(modifyStrategy.getModifyType()).size()>0){
+            if (MapperUtils.loadTypeArguments(modifyStrategy.getModifyType()).size() > 0) {
                 parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), new $T<$T>(){})"),
                         JSONObject.class, TypeReference.class, ClassName.get(modifyStrategy.getModifyType()));
-            }else {
+            } else {
                 parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), $T.class)"),
                         JSONObject.class, TypeName.get(modifyStrategy.getModifyType()));
             }
@@ -224,6 +224,15 @@ public class MapperBuilder {
                     }
 
                     if (ignoreStrategy.ignore()) {
+                        continue;
+                    }
+
+                    if (!modifyStrategy.getModifyType().toString().equals(field.getType().toString())) {
+                        String fixme = "// FIXME: " + type.getQualifiedName() + "[" + renameStrategy.getElementName() + "] do not fit " + convertStrategyType.toString() + "[" + renameStrategy.getElementName() + "]";
+                        buildConvertAB.addStatement(fixme);
+                        buildConvertAB.addStatement("// to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");
+                        buildConvertBA.addStatement(fixme);
+                        buildConvertBA.addStatement("// " + modifyStrategy.getRecoverName("to").replace("$", "from.get" + fieldUpperCase + "()"));
                         continue;
                     }
 

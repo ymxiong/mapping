@@ -109,7 +109,7 @@ public class MapperUtils {
      */
     public static TypeMirror loadMethodReturnTypeName(ExecutableElement executableElement) {
         Type.MethodType methodType = (Type.MethodType) executableElement.asType();
-        return methodType.getReturnType().asMethodType();
+        return methodType.getReturnType();
     }
 
 }
