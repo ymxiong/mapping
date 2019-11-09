@@ -1,6 +1,5 @@
 package cc.eamon.open.mapping.mapper.support;
 
-import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.strategy.*;
@@ -16,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author: eamon
@@ -201,26 +203,25 @@ public class MapperBuilder {
             String convertMethod = "convert";
             for (TypeMirror convertStrategyType : convertStrategy.getTypes()) {
 
-                Element convertStrategyElement = MapperContextHolder.get().getMapperElements().get(convertStrategyType.toString());
-                if (convertStrategyElement == null) {
-                    continue;
-                }
+                Map<String, TypeMirror> fieldTypeMirrors = new HashMap<>();
+                List<Element> elements = MapperUtils.loadTypeEnclosedElements(convertStrategyType);
+                elements.forEach(element -> fieldTypeMirrors.put(element.getSimpleName().toString(), element.asType()));
 
                 MethodSpec.Builder buildConvertAB = MethodSpec.methodBuilder(convertMethod)
                         .addModifiers(Modifier.PUBLIC)
                         .addModifiers(Modifier.STATIC)
                         .addParameter(self, "from")
                         .addParameter(TypeName.get(convertStrategyType), "to")
-                        .returns(TypeName.VOID);
-                buildConvertAB.addStatement("if (from == null || to == null) return");
+                        .returns(TypeName.get(convertStrategyType));
+                buildConvertAB.addStatement("if (from == null || to == null) return to");
 
                 MethodSpec.Builder buildConvertBA = MethodSpec.methodBuilder(convertMethod)
                         .addModifiers(Modifier.PUBLIC)
                         .addModifiers(Modifier.STATIC)
                         .addParameter(TypeName.get(convertStrategyType), "from")
                         .addParameter(self, "to")
-                        .returns(TypeName.VOID);
-                buildConvertBA.addStatement("if (from == null || to == null) return");
+                        .returns(self);
+                buildConvertBA.addStatement("if (from == null || to == null) return to");
 
                 for (MapperField field : type.getMapperFieldList()) {
                     IgnoreStrategy ignoreStrategy = (IgnoreStrategy) field.getStrategies().get(MapperEnum.IGNORE.getName());
@@ -229,7 +230,7 @@ public class MapperBuilder {
 
                     String fieldUpperCase = StringUtils.firstWordToUpperCase(renameStrategy.getName());
 
-                    if (!convertStrategyElement.getEnclosedElements().toString().contains(renameStrategy.getName())) {
+                    if (fieldTypeMirrors.get(renameStrategy.getName()) == null) {
                         continue;
                     }
 
@@ -237,8 +238,8 @@ public class MapperBuilder {
                         continue;
                     }
 
-                    if (!modifyStrategy.getModifyType().toString().equals(field.getType().toString())) {
-                        logger.warn("Mapping build convert type not fit, try to convert:" + modifyStrategy.getModifyType().toString() + " to " + field.getType().toString());
+                    if (!modifyStrategy.getModifyType().toString().equals(fieldTypeMirrors.get(renameStrategy.getName()).toString())) {
+                        logger.warn("Mapping build convert type not fit, try to convert:" + modifyStrategy.getModifyType().toString() + " to " + fieldTypeMirrors.get(renameStrategy.getName()));
                         String fixme = "// FIXME: " + type.getQualifiedName() + "[" + renameStrategy.getElementName() + "] do not fit " + convertStrategyType.toString() + "[" + renameStrategy.getName() + "]";
                         buildConvertAB.addStatement(fixme);
                         buildConvertAB.addStatement("// to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");
@@ -250,6 +251,8 @@ public class MapperBuilder {
                     buildConvertAB.addStatement("to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");
                     buildConvertBA.addStatement(modifyStrategy.getRecoverName("to").replace("$", "from.get" + fieldUpperCase + "()"));
                 }
+                buildConvertAB.addStatement("return to");
+                buildConvertBA.addStatement("return to");
 
                 typeSpec.addMethod(buildConvertAB.build());
                 typeSpec.addMethod(buildConvertBA.build());

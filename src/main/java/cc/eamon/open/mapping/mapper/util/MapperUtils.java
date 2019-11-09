@@ -102,6 +102,16 @@ public class MapperUtils {
     }
 
     /**
+     * load enclosed elements of a typeMirror
+     *
+     * @param typeMirror typeMirror
+     * @return list of enclosed elements
+     */
+    public static List<Element> loadTypeEnclosedElements(TypeMirror typeMirror) {
+        return new ArrayList<>(((Type.ClassType) typeMirror).tsym.getEnclosedElements());
+    }
+
+    /**
      * load method return type name of a method
      *
      * @param executableElement executableElement
