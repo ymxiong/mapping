@@ -36,8 +36,12 @@ public class ClassUtils {
         return ClassName.get("java.util", "LinkedHashMap");
     }
 
-    public static TypeName getParameterizedMap(){
+    public static TypeName getParameterizedObjectMap(){
         return ParameterizedTypeName.get(getMap(), getString(), getObject());
+    }
+
+    public static TypeName getParameterizedStringMap(){
+        return ParameterizedTypeName.get(getMap(), getString(), getString());
     }
 
     public static TypeName getParameterizedList(TypeName typeName){
