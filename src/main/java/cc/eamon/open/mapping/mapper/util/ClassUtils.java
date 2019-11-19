@@ -20,6 +20,10 @@ public class ClassUtils {
         return ClassName.get("java.lang", "String");
     }
 
+    public static ClassName getObject(){
+        return ClassName.get("java.lang", "Object");
+    }
+
     public static ClassName getMap(){
         return ClassName.get("java.util", "Map");
     }
@@ -33,7 +37,7 @@ public class ClassUtils {
     }
 
     public static TypeName getParameterizedMap(){
-        return ParameterizedTypeName.get(getMap(), getString(), getString());
+        return ParameterizedTypeName.get(getMap(), getString(), getObject());
     }
 
     public static TypeName getParameterizedList(TypeName typeName){

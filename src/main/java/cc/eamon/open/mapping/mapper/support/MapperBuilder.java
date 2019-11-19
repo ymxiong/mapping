@@ -6,8 +6,6 @@ import cc.eamon.open.mapping.mapper.support.strategy.*;
 import cc.eamon.open.mapping.mapper.util.ClassUtils;
 import cc.eamon.open.mapping.mapper.util.MapperUtils;
 import cc.eamon.open.mapping.mapper.util.StringUtils;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.squareup.javapoet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +51,9 @@ public class MapperBuilder {
 
         // build resultMap
         if (extendsStrategy.open()) {
-            buildMapStaticMethodSpec.addStatement("Map<String, String> map = $T.buildMap(obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
+            buildMapStaticMethodSpec.addStatement("Map<String, Object> map = $T.buildMap(obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         } else {
-            buildMapStaticMethodSpec.addStatement("Map<String, String> map = new $T<>()", ClassUtils.getLinkedHashMap());
+            buildMapStaticMethodSpec.addStatement("Map<String, Object> map = new $T<>()", ClassUtils.getLinkedHashMap());
         }
         buildMapStaticMethodSpec.addStatement("if (obj == null) return map");
 
@@ -118,15 +116,10 @@ public class MapperBuilder {
                     Modifier.PUBLIC);
             typeSpec.addField(fieldSpec.build());
 
-            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName("obj") + "))", JSONObject.class);
+            buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + modifyStrategy.getModifyName("obj") + ")");
             buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "this." + renameStrategy.getName()));
-            if (MapperUtils.loadTypeArguments(modifyStrategy.getModifyType()).size() > 0) {
-                parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), new $T<$T>(){})"),
-                        JSONObject.class, TypeReference.class, ClassName.get(modifyStrategy.getModifyType()));
-            } else {
-                parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "$T.parseObject(map.get(\"" + renameStrategy.getName() + "\"), $T.class)"),
-                        JSONObject.class, TypeName.get(modifyStrategy.getModifyType()));
-            }
+            parseEntityStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "($T) map.get(\"" + renameStrategy.getName() + "\")"),
+                    TypeName.get(modifyStrategy.getModifyType()));
             copyEntityStaticMethodSpec.addStatement("to.set" + StringUtils.firstWordToUpperCase(field.getSimpleName()) + "(from.get" + StringUtils.firstWordToUpperCase(field.getSimpleName()) + "())");
         }
 
@@ -161,7 +154,7 @@ public class MapperBuilder {
                     .returns(ClassUtils.getParameterizedMap());
 
 
-            buildMapExtraStaticMethodSpec.addStatement("Map<String, String> map = buildMap(obj)");
+            buildMapExtraStaticMethodSpec.addStatement("Map<String, Object> map = buildMap(obj)");
             buildMapExtraStaticMethodSpec.addStatement("if (obj == null) return map");
 
             for (MapperField field : extraStrategy.getMapperFields()) {
@@ -185,7 +178,7 @@ public class MapperBuilder {
                     buildMapExtraStaticMethodSpec.addParameter(TypeName.get(field.getType()), renameStrategy.getName());
                 }
 
-                buildMapExtraStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + renameStrategy.getName() + "))", JSONObject.class);
+                buildMapExtraStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + renameStrategy.getName() + ")");
 
             }
             buildMapExtraStaticMethodSpec.addStatement("return map");
