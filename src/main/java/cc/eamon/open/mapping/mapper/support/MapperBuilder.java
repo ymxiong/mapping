@@ -29,8 +29,11 @@ public class MapperBuilder {
     private static Logger logger = LoggerFactory.getLogger(MapperBuilder.class);
 
     public static TypeSpec build(MapperType type) {
+        // mapper strategies
+        BasicMapperStrategy basicMapperStrategy = (BasicMapperStrategy) type.getStrategies().get(MapperEnum.MAPPER.getName());
+
         // define new type
-        TypeSpec.Builder typeSpec = TypeSpec.classBuilder(type.getSimpleName() + StringUtils.firstWordToUpperCase(type.getMapperName()) + "Mapper").addModifiers(Modifier.PUBLIC);
+        TypeSpec.Builder typeSpec = TypeSpec.classBuilder(basicMapperStrategy.getBuildTypeName()).addModifiers(Modifier.PUBLIC);
 
         // type strategies
         ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());

@@ -14,4 +14,6 @@ public @interface Mapper {
 
     String[] value() default {};
 
+    String[] name() default {};
+
 }
