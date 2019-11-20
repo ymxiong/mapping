@@ -13,6 +13,8 @@ import java.lang.annotation.Annotation;
  */
 public enum MapperEnum {
 
+    MAPPER("MAPPER", Mapper.class, new BasicMapperFactory()),
+
     EXTENDS("EXTENDS", Mapper.class, new MapperExtendsFactory()),
 
     EXTRA("EXTRA", MapperExtra.class, new MapperExtraFactory()),
