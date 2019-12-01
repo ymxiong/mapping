@@ -6,7 +6,7 @@
 
     <groupId>cc.eamon.open</groupId>
     <artifactId>mapping</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-ALPHA</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -101,15 +101,6 @@
             <version>${javapoet-version}</version>
         </dependency>
         <!-- end of Java Poet -->
-
-        <!-- lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- end of lombok -->
 
         <!-- guava -->
         <dependency>
