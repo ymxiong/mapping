@@ -8,5 +8,8 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
  * Time: 2019-09-14 16:53:17
  */
 public class DocNormalStrategy extends MapperBaseStrategy implements DocStrategy {
-
+    @Override
+    public String getNote() {
+        return null;
+    }
 }

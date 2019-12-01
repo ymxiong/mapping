@@ -107,6 +107,8 @@ public class MapperBuilder {
             IgnoreStrategy ignoreStrategy = (IgnoreStrategy) field.getStrategies().get(MapperEnum.IGNORE.getName());
             RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
             ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
+            DocStrategy docStrategy = (DocStrategy) field.getStrategies().get(MapperEnum.DOC.getName());
+
 
             if (ignoreStrategy.ignore()) {
                 continue;
@@ -116,7 +118,10 @@ public class MapperBuilder {
                     TypeName.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
                     Modifier.PUBLIC);
+
+            fieldSpec.addJavadoc(docStrategy.getNote());
             typeSpec.addField(fieldSpec.build());
+
 
             buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName("obj") + "))", JSONObject.class);
             buildEntityMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "this." + renameStrategy.getName()));
