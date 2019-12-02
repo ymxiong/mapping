@@ -38,9 +38,19 @@ public class MapperBuilder {
 
         // type strategies
         ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());
+        DocStrategy typeDocStrategy = (DocStrategy) type.getStrategies().get(MapperEnum.DOC.getName());
+
 
         if (extendsStrategy.open()) {
             typeSpec.superclass(ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
+        }
+
+        if (typeDocStrategy.getNote()!=null){
+            AnnotationSpec annotationSpec=AnnotationSpec.builder(MapperDoc.class)
+                    .addMember("value", "\""+type.getMapperName()+"\"")
+                    .addMember(" note","\""+typeDocStrategy.getNote()+"\"")
+                    .build();
+            typeSpec.addAnnotation(annotationSpec);
         }
 
         // define import items
@@ -143,7 +153,7 @@ public class MapperBuilder {
             IgnoreStrategy ignoreStrategy = (IgnoreStrategy) field.getStrategies().get(MapperEnum.IGNORE.getName());
             RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
             ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
-            DocStrategy docStrategy = (DocStrategy) field.getStrategies().get(MapperEnum.DOC.getName());
+            DocStrategy fieldDocStrategy = (DocStrategy) field.getStrategies().get(MapperEnum.DOC.getName());
 
 
             if (ignoreStrategy.ignore()) {
@@ -154,10 +164,10 @@ public class MapperBuilder {
                     TypeName.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
                     Modifier.PUBLIC);
-            if (docStrategy.getNote()!=null){
+            if (fieldDocStrategy.getNote()!=null){
                 AnnotationSpec annotationSpec=AnnotationSpec.builder(MapperDoc.class)
                         .addMember("value", "\""+type.getMapperName()+"\"")
-                        .addMember(" note","\""+docStrategy.getNote()+"\"")
+                        .addMember(" note","\""+fieldDocStrategy.getNote()+"\"")
                         .build();
                 fieldSpec.addAnnotation(annotationSpec);
             }
