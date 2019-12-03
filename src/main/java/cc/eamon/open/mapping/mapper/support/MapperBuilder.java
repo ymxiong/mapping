@@ -1,6 +1,6 @@
 package cc.eamon.open.mapping.mapper.support;
 
-import cc.eamon.open.mapping.mapper.MapperDoc;
+import cc.eamon.open.mapping.enhancement.Doc;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.strategy.*;
@@ -46,7 +46,7 @@ public class MapperBuilder {
         }
 
         if (typeDocStrategy.getNote()!=null){
-            AnnotationSpec annotationSpec=AnnotationSpec.builder(MapperDoc.class)
+            AnnotationSpec annotationSpec=AnnotationSpec.builder(Doc.class)
                     .addMember("value", "\""+type.getMapperName()+"\"")
                     .addMember(" note","\""+typeDocStrategy.getNote()+"\"")
                     .build();
@@ -165,8 +165,7 @@ public class MapperBuilder {
                     renameStrategy.getName(),
                     Modifier.PUBLIC);
             if (fieldDocStrategy.getNote()!=null){
-                AnnotationSpec annotationSpec=AnnotationSpec.builder(MapperDoc.class)
-                        .addMember("value", "\""+type.getMapperName()+"\"")
+                AnnotationSpec annotationSpec=AnnotationSpec.builder(Doc.class)
                         .addMember(" note","\""+fieldDocStrategy.getNote()+"\"")
                         .build();
                 fieldSpec.addAnnotation(annotationSpec);
@@ -222,8 +221,6 @@ public class MapperBuilder {
                     .addModifiers(Modifier.STATIC)
                     .addParameter(self, "obj")
                     .returns(ClassUtils.getParameterizedObjectMap());
-
-
 
             buildMapExtraStaticMethodSpec.addStatement("Map<String, Object> map = buildMap(obj)");
             buildMapExtraStaticMethodSpec.addStatement("if (obj == null) return map");
