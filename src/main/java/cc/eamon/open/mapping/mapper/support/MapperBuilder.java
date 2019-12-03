@@ -47,8 +47,7 @@ public class MapperBuilder {
 
         if (typeDocStrategy.getNote()!=null){
             AnnotationSpec annotationSpec=AnnotationSpec.builder(Doc.class)
-                    .addMember("value", "\""+type.getMapperName()+"\"")
-                    .addMember(" note","\""+typeDocStrategy.getNote()+"\"")
+                    .addMember("note","\""+typeDocStrategy.getNote()+"\"")
                     .build();
             typeSpec.addAnnotation(annotationSpec);
         }
@@ -170,7 +169,6 @@ public class MapperBuilder {
                         .build();
                 fieldSpec.addAnnotation(annotationSpec);
             }
-
             typeSpec.addField(fieldSpec.build());
 
             buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + modifyStrategy.getModifyName("obj") + ")");

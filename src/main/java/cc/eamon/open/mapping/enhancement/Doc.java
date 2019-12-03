@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Email: eamon@eamon.cc
  * Time: 2019-12-01 23:46:45
  */
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Doc {
 
