@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * Created by Eamon on 2018/9/29.
  */
 @Target({ElementType.FIELD,ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 public @interface MapperDoc {
 
     String[] value() default {};
