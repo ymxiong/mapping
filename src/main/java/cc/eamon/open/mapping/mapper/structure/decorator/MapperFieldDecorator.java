@@ -1,14 +1,26 @@
 package cc.eamon.open.mapping.mapper.structure.decorator;
 
-import cc.eamon.open.mapping.mapper.structure.item.MapperField;
+import cc.eamon.open.mapping.mapper.structure.decorator.builder.FieldBuilder;
+import cc.eamon.open.mapping.mapper.support.MapperBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Author: eamon
- * Email: eamon@eamon.cc
- * Time: 2019-12-03 19:47:53
+ * Author:Lucas
+ * Email: 1181370590@qq.com
+ * Time: 2019-12-09 19:47:53
  */
-public interface MapperFieldDecorator extends MapperDecorator{
+public abstract class MapperFieldDecorator implements MapperDecorator{
+    protected static Logger logger = LoggerFactory.getLogger(MapperBuilder.class);
 
-    void decorate(MapperField mapperField);
+    protected FieldBuilder fieldBuilder;
+
+    public MapperFieldDecorator(FieldBuilder fieldBuilder) {
+        this.fieldBuilder = fieldBuilder;
+    }
+
+    public void decorate(){
+
+    };
 
 }

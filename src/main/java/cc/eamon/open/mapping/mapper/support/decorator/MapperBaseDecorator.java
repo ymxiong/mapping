@@ -1,42 +1,61 @@
 package cc.eamon.open.mapping.mapper.support.decorator;
 
+import cc.eamon.open.mapping.mapper.structure.decorator.builder.TypeBuilder;
 import cc.eamon.open.mapping.mapper.structure.decorator.MapperTypeDecorator;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.support.strategy.BasicMapperStrategy;
-import cc.eamon.open.mapping.mapper.support.strategy.ExtendsStrategy;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
 
+
+
 /**
- * Author: eamon
- * Email: eamon@eamon.cc
- * Time: 2019-12-03 17:17:06
+ * Author:Lucas
+ * Email: 1181370590@qq.com
+ * Time: 2019-12-09 19:58:38
  */
-public class MapperBaseDecorator implements MapperTypeDecorator {
+public class MapperBaseDecorator extends MapperTypeDecorator {
+
+    public MapperBaseDecorator(TypeBuilder typeBuilder) {
+        super(typeBuilder);
+    }
 
     @Override
-    public void decorate(MapperType type) {
+    public void decorate() {
+        //init
+        MapperType type=typeBuilder.getMapperType();
+
         // mapper strategies
         BasicMapperStrategy basicMapperStrategy = (BasicMapperStrategy) type.getStrategies().get(MapperEnum.MAPPER.getName());
 
-        // define new type
-        TypeSpec.Builder typeSpec = TypeSpec.classBuilder(basicMapperStrategy.getBuildTypeName()).addModifiers(Modifier.PUBLIC);
+        typeBuilder.setName(basicMapperStrategy.getBuildTypeName());
 
-        // type strategies
-        ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());
-
-        if (extendsStrategy.open()) {
-            typeSpec.superclass(ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
-        }
+        typeBuilder.setTypeSpec(TypeSpec.classBuilder(typeBuilder.getName()).addModifiers(Modifier.PUBLIC));
 
         // define import items
-        ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
+        typeBuilder.setSelf(ClassName.get(type.getPackageName(), type.getSimpleName()));
 
 
+        //添加一些自己定义的方法
+        MapperBaseMethodDecorator mapperBaseMethodDecorator=new MapperBaseMethodDecorator(typeBuilder);
+        mapperBaseMethodDecorator.decorate();
+        //开始定义处理逻辑
+        //处理域注解
+        MapperFiledBaseDecorator mapperFiledBaseDecorator=new MapperFiledBaseDecorator(typeBuilder);
+        mapperFiledBaseDecorator.decorate();
 
+        //处理方法注解
+        MapperMethodBaseDecorator mapperMethodBaseDecorator=new MapperMethodBaseDecorator(typeBuilder);
+        mapperMethodBaseDecorator.decorate();
+
+        mapperBaseMethodDecorator.addReturn();
+        mapperBaseMethodDecorator.addMethodToType();
+        //处理类上注解
+        MapperTypeBaseDecorator mapperTypeBaseDecorator=new MapperTypeBaseDecorator(typeBuilder);
+        mapperTypeBaseDecorator.decorate();
     }
 
 }

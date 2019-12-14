@@ -4,6 +4,7 @@ import cc.eamon.open.mapping.exception.ProcessingException;
 import cc.eamon.open.mapping.mapper.Mapper;
 import cc.eamon.open.mapping.mapper.structure.context.MapperContextHolder;
 import cc.eamon.open.mapping.mapper.structure.element.MapperTypeElement;
+import cc.eamon.open.mapping.mapper.support.MapperBuilder;
 import cc.eamon.open.mapping.mapper.support.MapperTypeBuilder;
 import com.squareup.javapoet.JavaFile;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class MapperProcessor extends AbstractProcessor {
                         mapperType -> {
                             try {
                                 JavaFile.builder(mapperType.getPackageName(), MapperTypeBuilder.build(mapperType)).build().writeTo(filer);
-//                                JavaFile.builder(mapperType.getPackageName(), MapperBuilder.build(mapperType)).build().writeTo(filer);
+                             //JavaFile.builder(mapperType.getPackageName(), MapperBuilder.build(mapperType)).build().writeTo(filer);
                             } catch (IOException e) {
                                 logger.error("Mapping type build error:" + elem.getSimpleName() + "-" + mapperType.getQualifiedName() + "-" + e.toString());
                             }
