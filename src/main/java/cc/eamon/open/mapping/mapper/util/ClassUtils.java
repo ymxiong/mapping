@@ -36,6 +36,21 @@ public class ClassUtils {
         return ClassName.get("java.util", "LinkedHashMap");
     }
 
+    public static ClassName getTargetClassType(String className) {
+        switch (className) {
+            case "BigDecimal":
+                return ClassName.get("java.math", "BigDecimal");
+            case "Date":
+                return ClassName.get("java.util", "Date");
+            default:
+                return ClassName.get("java.lang", className);
+        }
+    }
+
+    public static TypeName getParameterizedType(ClassName rawType, TypeName[] typeArguments){
+        return ParameterizedTypeName.get(rawType, typeArguments);
+    }
+
     public static TypeName getParameterizedObjectMap(){
         return ParameterizedTypeName.get(getMap(), getString(), getObject());
     }

@@ -17,6 +17,8 @@ public abstract class MapperBaseStrategy implements MapperStrategy {
 
     private TypeMirror type;
 
+    private String[] typeArgs;
+
     @Override
     public String getMapper() {
         return mapper;
@@ -45,5 +47,15 @@ public abstract class MapperBaseStrategy implements MapperStrategy {
     @Override
     public void setType(TypeMirror type) {
         this.type = type;
+    }
+
+    @Override
+    public String[] getTypeArgs() {
+        return typeArgs;
+    }
+
+    @Override
+    public void setTypeArgs(String[] typeArgs) {
+        this.typeArgs = typeArgs;
     }
 }

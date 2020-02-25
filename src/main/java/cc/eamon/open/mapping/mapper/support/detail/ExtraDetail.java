@@ -17,6 +17,8 @@ public class ExtraDetail implements MapperDetail {
 
     private TypeMirror type;
 
+    private String[] typeArgs;
+
     private Boolean list;
 
     public String getMapper() {
@@ -41,6 +43,14 @@ public class ExtraDetail implements MapperDetail {
 
     public void setType(TypeMirror type) {
         this.type = type;
+    }
+
+    public String[] getTypeArgs() {
+        return typeArgs;
+    }
+
+    public void setTypeArgs(String[] typeArgs) {
+        this.typeArgs = typeArgs;
     }
 
     public Boolean getList() {

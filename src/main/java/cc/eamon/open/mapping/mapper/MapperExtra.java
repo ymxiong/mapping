@@ -18,6 +18,8 @@ public @interface MapperExtra {
 
     Class<?>[] type() default {};
 
+    String[] typeArgs() default {};
+
     boolean[] list() default {};
 
 }

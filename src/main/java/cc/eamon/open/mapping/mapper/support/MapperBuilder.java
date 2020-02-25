@@ -45,9 +45,9 @@ public class MapperBuilder {
             typeSpec.superclass(ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         }
 
-        if (typeDocStrategy.getNote()!=null){
-            AnnotationSpec annotationSpec=AnnotationSpec.builder(Doc.class)
-                    .addMember("note","\""+typeDocStrategy.getNote()+"\"")
+        if (typeDocStrategy.getNote() != null) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(Doc.class)
+                    .addMember("note", "\"" + typeDocStrategy.getNote() + "\"")
                     .build();
             typeSpec.addAnnotation(annotationSpec);
         }
@@ -163,9 +163,9 @@ public class MapperBuilder {
                     TypeName.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
                     Modifier.PUBLIC);
-            if (fieldDocStrategy.getNote()!=null){
-                AnnotationSpec annotationSpec=AnnotationSpec.builder(Doc.class)
-                        .addMember(" note","\""+fieldDocStrategy.getNote()+"\"")
+            if (fieldDocStrategy.getNote() != null) {
+                AnnotationSpec annotationSpec = AnnotationSpec.builder(Doc.class)
+                        .addMember(" note", "\"" + fieldDocStrategy.getNote() + "\"")
                         .build();
                 fieldSpec.addAnnotation(annotationSpec);
             }
@@ -238,6 +238,18 @@ public class MapperBuilder {
                 RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
                 ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
 
+                ClassName[] typeArgsClassName = null;
+                if (field.getTypeArgs() != null) {
+                    typeArgsClassName = new ClassName[field.getTypeArgs().length];
+                    for (int i = 0; i < field.getTypeArgs().length; i++) {
+                        typeArgsClassName[i] = ClassUtils.getTargetClassType(field.getTypeArgs()[i]);
+                    }
+                }
+
+                TypeName fieldTypeName = TypeName.get(field.getType());
+                if (typeArgsClassName != null) {
+                    fieldTypeName = ClassUtils.getParameterizedType((ClassName) fieldTypeName, typeArgsClassName);
+                }
 
                 if (field.getList()) {
                     FieldSpec.Builder fieldSpec = FieldSpec.builder(
@@ -245,16 +257,17 @@ public class MapperBuilder {
                             renameStrategy.getName(),
                             Modifier.PUBLIC);
                     typeSpec.addField(fieldSpec.build());
-                    buildMapExtraStaticMethodSpec.addParameter(ClassUtils.getParameterizedList(TypeName.get(field.getType())), renameStrategy.getName());
-                    buildSerialMapExtraStaticMethodSpec.addParameter(ClassUtils.getParameterizedList(TypeName.get(field.getType())), renameStrategy.getName());
+                    TypeName fieldTypeNameList = ClassUtils.getParameterizedList(fieldTypeName);
+                    buildMapExtraStaticMethodSpec.addParameter(fieldTypeNameList, renameStrategy.getName());
+                    buildSerialMapExtraStaticMethodSpec.addParameter(fieldTypeNameList, renameStrategy.getName());
                 } else {
                     FieldSpec.Builder fieldSpec = FieldSpec.builder(
                             TypeName.get(modifyStrategy.getModifyType()),
                             renameStrategy.getName(),
                             Modifier.PUBLIC);
                     typeSpec.addField(fieldSpec.build());
-                    buildMapExtraStaticMethodSpec.addParameter(TypeName.get(field.getType()), renameStrategy.getName());
-                    buildSerialMapExtraStaticMethodSpec.addParameter(TypeName.get(field.getType()), renameStrategy.getName());
+                    buildMapExtraStaticMethodSpec.addParameter(fieldTypeName, renameStrategy.getName());
+                    buildSerialMapExtraStaticMethodSpec.addParameter(fieldTypeName, renameStrategy.getName());
                 }
 
                 buildMapExtraStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + renameStrategy.getName() + ")");

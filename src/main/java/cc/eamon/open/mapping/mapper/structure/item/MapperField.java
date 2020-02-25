@@ -18,6 +18,8 @@ public class MapperField {
 
     private TypeMirror type;
 
+    private String[] typeArgs;
+
     private Boolean list = false;
 
     private Map<String, MapperStrategy> strategies;
@@ -44,6 +46,14 @@ public class MapperField {
 
     public void setType(TypeMirror type) {
         this.type = type;
+    }
+
+    public String[] getTypeArgs() {
+        return typeArgs;
+    }
+
+    public void setTypeArgs(String[] typeArgs) {
+        this.typeArgs = typeArgs;
     }
 
     public Boolean getList() {

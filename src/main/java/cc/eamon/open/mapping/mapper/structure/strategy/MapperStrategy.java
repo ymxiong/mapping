@@ -48,4 +48,16 @@ public interface MapperStrategy {
      */
     void setType(TypeMirror type);
 
+    /**
+     * get element type args
+     * @return element typeArgs
+     */
+    String[] getTypeArgs();
+
+    /**
+     * set element typeArgs
+     * @param typeArgs of element
+     */
+    void setTypeArgs(String[] typeArgs);
+
 }
