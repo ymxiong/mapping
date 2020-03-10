@@ -69,7 +69,7 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
                 detail.setType(typeValues.get(i));
             }
 
-            if (i >= typeValues.size()) {
+            if (i >= mapperExtra.typeArgs().length) {
                 detail.setTypeArgs(null);
             } else {
                 if ("null".equals(mapperExtra.typeArgs()[i])){

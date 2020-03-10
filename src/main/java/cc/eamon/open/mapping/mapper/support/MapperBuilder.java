@@ -54,36 +54,31 @@ public class MapperBuilder {
 
         // define import items
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
-        ClassName mapper = ClassName.get(typeSpec.getClass());
+        ClassName selfMapperClassName = ClassName.get(type.getPackageName(), basicMapperStrategy.getBuildTypeName());
 
 
         // init: build mapper
         logger.info("Mapping build init buildMapper :" + type.getQualifiedName());
         String buildMapperStaticMethod = "buildMapper";
         MethodSpec.Builder buildMapperStaticMethodSpec = MethodSpec.methodBuilder(buildMapperStaticMethod)
-                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addParameter(self, "obj")
-                .returns(void.class);
+                .returns(selfMapperClassName);
 
-//        // build obj
-//        buildMapperStaticMethodSpec.addStatement("$T obj = new $T()", mapper, mapper);
-//        if (extendsStrategy.open()) {
-//            buildMapperStaticMethodSpec.addStatement("$T.copyEntity(super.buildEntity(), obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
-//        }
-
+        buildMapperStaticMethodSpec.addStatement("$T mapper = new $T()", selfMapperClassName, selfMapperClassName);
 
         // init: build self map
-        logger.info("Mapping build init buildSelfMap :" + type.getQualifiedName());
-        String buildSelfMapperMethod = "buildSelfMap";
-        MethodSpec.Builder buildSelfMapMethodSpec = MethodSpec.methodBuilder(buildSelfMapperMethod)
+        logger.info("Mapping build init buildMap :" + type.getQualifiedName());
+        String buildMapMethod = "buildMap";
+        MethodSpec.Builder buildMapMethodSpec = MethodSpec.methodBuilder(buildMapMethod)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassUtils.getParameterizedObjectMap());
 
         // build resultMap
         if (extendsStrategy.open()) {
-            buildSelfMapMethodSpec.addStatement("Map<String, Object> map = $T.buildMap(obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
+            buildMapMethodSpec.addStatement("Map<String, Object> map = $T.buildMap(obj)", ClassName.get(extendsStrategy.getPackageName(), extendsStrategy.getSuperMapperName()));
         } else {
-            buildSelfMapMethodSpec.addStatement("Map<String, Object> map = new $T<>()", ClassUtils.getLinkedHashMap());
+            buildMapMethodSpec.addStatement("Map<String, Object> map = new $T<>()", ClassUtils.getLinkedHashMap());
         }
 
         // init: build map
@@ -202,9 +197,9 @@ public class MapperBuilder {
             }
             typeSpec.addField(fieldSpec.build());
 
-//            buildMapperStaticMethodSpec.addStatement(modifyStrategy.getRecoverName("obj").replace("$", "this." + renameStrategy.getName()));
-            buildMapperStaticMethodSpec.addStatement("this."+renameStrategy.getName()+"="+modifyStrategy.getModifyName("obj"));
-            buildSelfMapMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\",this." + renameStrategy.getName()+")");
+
+            buildMapperStaticMethodSpec.addStatement("mapper." + renameStrategy.getName() + "=" + modifyStrategy.getModifyName("obj"));
+            buildMapMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\",this." + renameStrategy.getName() + ")");
 
             buildMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + modifyStrategy.getModifyName("obj") + ")");
             buildSerialMapStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + modifyStrategy.getModifyName("obj") + "))", JSONObject.class);
@@ -222,8 +217,8 @@ public class MapperBuilder {
         }
 
         // add return
-        buildMapperStaticMethodSpec.addStatement("return");
-        buildSelfMapMethodSpec.addStatement("return map");
+        buildMapperStaticMethodSpec.addStatement("return mapper");
+        buildMapMethodSpec.addStatement("return map");
         buildMapStaticMethodSpec.addStatement("return map");
         buildSerialMapStaticMethodSpec.addStatement("return map");
         buildEntityMethodSpec.addStatement("return obj");
@@ -232,7 +227,7 @@ public class MapperBuilder {
 
         // add method
         typeSpec.addMethod(buildMapperStaticMethodSpec.build());
-        typeSpec.addMethod(buildSelfMapMethodSpec.build());
+        typeSpec.addMethod(buildMapMethodSpec.build());
         typeSpec.addMethod(buildMapStaticMethodSpec.build());
         typeSpec.addMethod(buildSerialMapStaticMethodSpec.build());
         typeSpec.addMethod(buildEntityMethodSpec.build());
