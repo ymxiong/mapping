@@ -31,7 +31,6 @@ public class BuildEntityPipeline extends BasePipeline {
         // type strategies
         ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());
 
-
         // define import items
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
