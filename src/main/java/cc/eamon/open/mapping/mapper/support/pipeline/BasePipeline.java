@@ -49,6 +49,10 @@ public abstract class BasePipeline implements Pipeline {
         return fieldSpec;
     }
 
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
+
     public abstract TypeSpec.Builder buildTypeBefore(MapperType type, TypeSpec.Builder typeSpec);
 
     public abstract FieldSpec.Builder buildSelfField(MapperField field, FieldSpec.Builder fieldSpec);

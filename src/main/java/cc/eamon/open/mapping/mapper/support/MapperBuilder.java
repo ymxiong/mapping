@@ -3,19 +3,22 @@ package cc.eamon.open.mapping.mapper.support;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.convert.BaseConvertPipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.convert.ConvertABPipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.convert.ConvertBAPipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.convert.InitMapperConvertPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.extra.BuildMapExtraStaticPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.extra.BuildMapSerialExtraStaticPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.extra.InitMapperExtraPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.mapper.*;
 import cc.eamon.open.mapping.mapper.support.strategy.*;
 import cc.eamon.open.mapping.mapper.util.MapperUtils;
-import cc.eamon.open.mapping.mapper.util.StringUtils;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.List;
@@ -63,11 +66,9 @@ public class MapperBuilder {
         // build extra
         typeSpec = buildExtra(type, typeSpec);
 
-        // TODO: START REFACTOR
-        // define import items
-        ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
-        buildConvert(type, typeSpec, self);
-        // TODO: END REFACTOR
+        // build convert
+        typeSpec = buildConvert(type, typeSpec);
+
         return typeSpec.build();
 
     }
@@ -76,6 +77,8 @@ public class MapperBuilder {
         // init extra
         ExtraStrategy extraStrategy = (ExtraStrategy) type.getStrategies().get(MapperEnum.EXTRA.getName());
         if (!extraStrategy.open()) return typeSpec;
+
+        // init pipeline
         Pipeline mapperExtraPipeline = new InitMapperExtraPipeline();
         mapperExtraPipeline = new BuildMapExtraStaticPipeline(mapperExtraPipeline);
         mapperExtraPipeline = new BuildMapSerialExtraStaticPipeline(mapperExtraPipeline);
@@ -93,73 +96,44 @@ public class MapperBuilder {
         return typeSpec;
     }
 
-    private static void buildConvert(MapperType type, TypeSpec.Builder typeSpec, ClassName self) {
+    private static TypeSpec.Builder buildConvert(MapperType type, TypeSpec.Builder typeSpec) {
         // init convert
         ConvertStrategy convertStrategy = (ConvertStrategy) type.getStrategies().get(MapperEnum.CONVERT.getName());
+        if (!convertStrategy.open()) return typeSpec;
 
-        if (convertStrategy.open()) {
+        // init pipeline
+        BaseConvertPipeline mapperConvertPipeline = new InitMapperConvertPipeline();
+        mapperConvertPipeline = new ConvertABPipeline(mapperConvertPipeline);
+        mapperConvertPipeline = new ConvertBAPipeline(mapperConvertPipeline);
 
-            logger.info("Mapping build init convert:" + type.getQualifiedName());
-            String convertMethod = "convert";
-            for (TypeMirror convertStrategyType : convertStrategy.getTypes()) {
+        logger.info("Mapping build init convert:" + type.getQualifiedName());
+        for (TypeMirror convertStrategyType : convertStrategy.getTypes()) {
+            Map<String, TypeMirror> fieldTypeMirrors = new HashMap<>();
+            List<Element> elements = MapperUtils.loadTypeEnclosedElements(convertStrategyType);
+            elements.forEach(element -> fieldTypeMirrors.put(element.getSimpleName().toString(), element.asType()));
 
-                Map<String, TypeMirror> fieldTypeMirrors = new HashMap<>();
-                List<Element> elements = MapperUtils.loadTypeEnclosedElements(convertStrategyType);
-                elements.forEach(element -> fieldTypeMirrors.put(element.getSimpleName().toString(), element.asType()));
+            mapperConvertPipeline.setConvertStrategyType(convertStrategyType);
+            mapperConvertPipeline.setFieldTypeMirrors(fieldTypeMirrors);
 
-                MethodSpec.Builder buildConvertAB = MethodSpec.methodBuilder(convertMethod)
-                        .addModifiers(Modifier.PUBLIC)
-                        .addModifiers(Modifier.STATIC)
-                        .addParameter(self, "from")
-                        .addParameter(TypeName.get(convertStrategyType), "to")
-                        .returns(TypeName.get(convertStrategyType));
-                buildConvertAB.addStatement("if (from == null || to == null) return to");
+            // build before
+            typeSpec = mapperConvertPipeline.buildBefore(type, typeSpec);
+            for (MapperField field : type.getMapperFieldList()) {
+                IgnoreStrategy ignoreStrategy = (IgnoreStrategy) field.getStrategies().get(MapperEnum.IGNORE.getName());
+                RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
 
-                MethodSpec.Builder buildConvertBA = MethodSpec.methodBuilder(convertMethod)
-                        .addModifiers(Modifier.PUBLIC)
-                        .addModifiers(Modifier.STATIC)
-                        .addParameter(TypeName.get(convertStrategyType), "from")
-                        .addParameter(self, "to")
-                        .returns(self);
-                buildConvertBA.addStatement("if (from == null || to == null) return to");
-
-                for (MapperField field : type.getMapperFieldList()) {
-                    IgnoreStrategy ignoreStrategy = (IgnoreStrategy) field.getStrategies().get(MapperEnum.IGNORE.getName());
-                    RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
-                    ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
-
-                    String fieldUpperCase = StringUtils.firstWordToUpperCase(renameStrategy.getName());
-
-                    if (fieldTypeMirrors.get(renameStrategy.getName()) == null) {
-                        continue;
-                    }
-
-                    if (ignoreStrategy.ignore()) {
-                        continue;
-                    }
-
-                    if (!modifyStrategy.getModifyType().toString().equals(fieldTypeMirrors.get(renameStrategy.getName()).toString())) {
-                        logger.warn("Mapping build convert type not fit, try to convert:" + modifyStrategy.getModifyType().toString() + " to " + fieldTypeMirrors.get(renameStrategy.getName()));
-                        String fixme = "// FIXME: " + type.getQualifiedName() + "[" + renameStrategy.getElementName() + "] do not fit " + convertStrategyType.toString() + "[" + renameStrategy.getName() + "]";
-                        buildConvertAB.addStatement(fixme);
-                        buildConvertAB.addStatement("// to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");
-                        buildConvertBA.addStatement(fixme);
-                        buildConvertBA.addStatement("// " + modifyStrategy.getRecoverName("to").replace("$", "from.get" + fieldUpperCase + "()"));
-                        continue;
-                    }
-
-                    buildConvertAB.addStatement("to.set" + fieldUpperCase + "(" + modifyStrategy.getModifyName("from") + ")");
-                    buildConvertBA.addStatement(modifyStrategy.getRecoverName("to").replace("$", "from.get" + fieldUpperCase + "()"));
+                if (fieldTypeMirrors.get(renameStrategy.getName()) == null) {
+                    continue;
                 }
-                buildConvertAB.addStatement("return to");
-                buildConvertBA.addStatement("return to");
 
-                typeSpec.addMethod(buildConvertAB.build());
-                typeSpec.addMethod(buildConvertBA.build());
+                if (ignoreStrategy.ignore()) {
+                    continue;
+                }
+
+                mapperConvertPipeline.buildField(field, null);
             }
-
+            typeSpec = mapperConvertPipeline.buildAfter(type, typeSpec);
         }
-
+        return typeSpec;
     }
 
 }
