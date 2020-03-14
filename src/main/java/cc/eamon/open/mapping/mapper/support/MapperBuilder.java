@@ -2,12 +2,14 @@ package cc.eamon.open.mapping.mapper.support;
 
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
-import cc.eamon.open.mapping.mapper.support.pipeline.*;
+import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.extra.BuildMapExtraStaticPipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.extra.BuildMapSerialExtraStaticPipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.extra.InitMapperExtraPipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.mapper.*;
 import cc.eamon.open.mapping.mapper.support.strategy.*;
-import cc.eamon.open.mapping.mapper.util.ClassUtils;
 import cc.eamon.open.mapping.mapper.util.MapperUtils;
 import cc.eamon.open.mapping.mapper.util.StringUtils;
-import com.alibaba.fastjson.JSONObject;
 import com.squareup.javapoet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +32,17 @@ public class MapperBuilder {
 
     public static TypeSpec build(MapperType type) {
 
-        Pipeline pipeline = new InitPipeline();
-        pipeline = new BuildMapperStaticPipeline(pipeline);
-        pipeline = new BuildMapPipeline(pipeline);
-        pipeline = new BuildMapStaticPipeline(pipeline);
-        pipeline = new BuildSerialMapStaticPipeline(pipeline);
-        pipeline = new BuildEntityPipeline(pipeline);
-        pipeline = new ParseEntityPipeline(pipeline);
-        pipeline = new ParseSerialEntityPipeline(pipeline);
+        Pipeline mapperPipeline = new InitMapperPipeline();
+        mapperPipeline = new BuildMapperStaticPipeline(mapperPipeline);
+        mapperPipeline = new BuildMapPipeline(mapperPipeline);
+        mapperPipeline = new BuildMapStaticPipeline(mapperPipeline);
+        mapperPipeline = new BuildSerialMapStaticPipeline(mapperPipeline);
+        mapperPipeline = new BuildEntityPipeline(mapperPipeline);
+        mapperPipeline = new ParseEntityPipeline(mapperPipeline);
+        mapperPipeline = new ParseSerialEntityPipeline(mapperPipeline);
 
         // build before
-        TypeSpec.Builder typeSpec = pipeline.buildBefore(type, null);
+        TypeSpec.Builder typeSpec = mapperPipeline.buildBefore(type, null);
 
         // build fields
         for (MapperField field : type.getMapperFieldList()) {
@@ -51,96 +53,44 @@ public class MapperBuilder {
             }
 
             // build field
-            FieldSpec.Builder fieldSpec = pipeline.buildField(field, null);
+            FieldSpec.Builder fieldSpec = mapperPipeline.buildField(field, null);
             typeSpec.addField(fieldSpec.build());
         }
 
         // build after
-        typeSpec = pipeline.buildAfter(type, typeSpec);
+        typeSpec = mapperPipeline.buildAfter(type, typeSpec);
 
+        // build extra
+        typeSpec = buildExtra(type, typeSpec);
+
+        // TODO: START REFACTOR
         // define import items
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
-
-        // add method
-        buildExtra(type, typeSpec, self);
         buildConvert(type, typeSpec, self);
-
+        // TODO: END REFACTOR
         return typeSpec.build();
 
     }
 
-    private static void buildExtra(MapperType type, TypeSpec.Builder typeSpec, ClassName self) {
+    private static TypeSpec.Builder buildExtra(MapperType type, TypeSpec.Builder typeSpec) {
         // init extra
         ExtraStrategy extraStrategy = (ExtraStrategy) type.getStrategies().get(MapperEnum.EXTRA.getName());
-        if (extraStrategy.open()) {
+        if (!extraStrategy.open()) return typeSpec;
+        Pipeline mapperExtraPipeline = new InitMapperExtraPipeline();
+        mapperExtraPipeline = new BuildMapExtraStaticPipeline(mapperExtraPipeline);
+        mapperExtraPipeline = new BuildMapSerialExtraStaticPipeline(mapperExtraPipeline);
 
-            logger.info("Mapping build init buildMapExtra:" + type.getQualifiedName());
-            String buildMapExtraStaticMethod = "buildMapExtra";
-            MethodSpec.Builder buildMapExtraStaticMethodSpec = MethodSpec.methodBuilder(buildMapExtraStaticMethod)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addModifiers(Modifier.STATIC)
-                    .addParameter(self, "obj")
-                    .returns(ClassUtils.getParameterizedObjectMap());
+        // build Before
+        typeSpec = mapperExtraPipeline.buildBefore(type, typeSpec);
 
-            buildMapExtraStaticMethodSpec.addStatement("Map<String, Object> map = buildMap(obj)");
-            buildMapExtraStaticMethodSpec.addStatement("if (obj == null) return map");
-
-            logger.info("Mapping build init buildMapSerialExtra:" + type.getQualifiedName());
-            String buildMapSerialExtraStaticMethod = "buildSerialMapExtra";
-            MethodSpec.Builder buildSerialMapExtraStaticMethodSpec = MethodSpec.methodBuilder(buildMapSerialExtraStaticMethod)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addModifiers(Modifier.STATIC)
-                    .addParameter(self, "obj")
-                    .returns(ClassUtils.getParameterizedStringMap());
-
-            buildSerialMapExtraStaticMethodSpec.addStatement("Map<String, String> map = buildSerialMap(obj)");
-            buildSerialMapExtraStaticMethodSpec.addStatement("if (obj == null) return map");
-
-            for (MapperField field : extraStrategy.getMapperFields()) {
-                RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
-                ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
-
-                ClassName[] typeArgsClassName = null;
-                if (field.getTypeArgs() != null) {
-                    typeArgsClassName = new ClassName[field.getTypeArgs().length];
-                    for (int i = 0; i < field.getTypeArgs().length; i++) {
-                        typeArgsClassName[i] = ClassUtils.getTargetClassType(field.getTypeArgs()[i]);
-                    }
-                }
-
-                TypeName fieldTypeName = TypeName.get(field.getType());
-                if (typeArgsClassName != null) {
-                    fieldTypeName = ClassUtils.getParameterizedType((ClassName) fieldTypeName, typeArgsClassName);
-                }
-
-                if (field.getList()) {
-                    FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                            ClassUtils.getParameterizedList(TypeName.get(modifyStrategy.getModifyType())),
-                            renameStrategy.getName(),
-                            Modifier.PUBLIC);
-                    typeSpec.addField(fieldSpec.build());
-                    TypeName fieldTypeNameList = ClassUtils.getParameterizedList(fieldTypeName);
-                    buildMapExtraStaticMethodSpec.addParameter(fieldTypeNameList, renameStrategy.getName());
-                    buildSerialMapExtraStaticMethodSpec.addParameter(fieldTypeNameList, renameStrategy.getName());
-                } else {
-                    FieldSpec.Builder fieldSpec = FieldSpec.builder(
-                            TypeName.get(modifyStrategy.getModifyType()),
-                            renameStrategy.getName(),
-                            Modifier.PUBLIC);
-                    typeSpec.addField(fieldSpec.build());
-                    buildMapExtraStaticMethodSpec.addParameter(fieldTypeName, renameStrategy.getName());
-                    buildSerialMapExtraStaticMethodSpec.addParameter(fieldTypeName, renameStrategy.getName());
-                }
-
-                buildMapExtraStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", " + renameStrategy.getName() + ")");
-                buildSerialMapExtraStaticMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\", $T.toJSONString(" + renameStrategy.getName() + "))", JSONObject.class);
-
-            }
-            buildMapExtraStaticMethodSpec.addStatement("return map");
-            buildSerialMapExtraStaticMethodSpec.addStatement("return map");
-            typeSpec.addMethod(buildMapExtraStaticMethodSpec.build());
-            typeSpec.addMethod(buildSerialMapExtraStaticMethodSpec.build());
+        for (MapperField field : extraStrategy.getMapperFields()) {
+            FieldSpec.Builder fieldSpec = mapperExtraPipeline.buildField(field, null);
+            typeSpec.addField(fieldSpec.build());
         }
+
+        // build After
+        typeSpec = mapperExtraPipeline.buildAfter(type, typeSpec);
+        return typeSpec;
     }
 
     private static void buildConvert(MapperType type, TypeSpec.Builder typeSpec, ClassName self) {
