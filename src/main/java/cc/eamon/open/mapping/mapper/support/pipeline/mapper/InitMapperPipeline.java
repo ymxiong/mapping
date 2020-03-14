@@ -1,9 +1,10 @@
-package cc.eamon.open.mapping.mapper.support.pipeline;
+package cc.eamon.open.mapping.mapper.support.pipeline.mapper;
 
 import cc.eamon.open.mapping.enhancement.Doc;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
+import cc.eamon.open.mapping.mapper.support.pipeline.BasePipeline;
 import cc.eamon.open.mapping.mapper.support.strategy.*;
 import com.squareup.javapoet.*;
 
@@ -14,9 +15,9 @@ import javax.lang.model.element.Modifier;
  * Email: eamon@eamon.cc
  * Time: 2020-03-15 02:39:56
  */
-public class InitPipeline extends BasePipeline {
+public class InitMapperPipeline extends BasePipeline {
 
-    public InitPipeline() {
+    public InitMapperPipeline() {
         super(null);
     }
 

@@ -1,8 +1,10 @@
-package cc.eamon.open.mapping.mapper.support.pipeline;
+package cc.eamon.open.mapping.mapper.support.pipeline.mapper;
 
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
+import cc.eamon.open.mapping.mapper.support.pipeline.BasePipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
 import cc.eamon.open.mapping.mapper.util.ClassUtils;

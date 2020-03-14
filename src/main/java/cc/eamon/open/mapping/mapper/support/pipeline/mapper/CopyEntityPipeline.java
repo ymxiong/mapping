@@ -1,7 +1,9 @@
-package cc.eamon.open.mapping.mapper.support.pipeline;
+package cc.eamon.open.mapping.mapper.support.pipeline.mapper;
 
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
+import cc.eamon.open.mapping.mapper.support.pipeline.BasePipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
 import cc.eamon.open.mapping.mapper.util.StringUtils;
 import com.squareup.javapoet.*;
 

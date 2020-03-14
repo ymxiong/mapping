@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BasePipeline implements Pipeline {
 
-    static Logger logger = LoggerFactory.getLogger(BasePipeline.class);
+    protected static Logger logger = LoggerFactory.getLogger(BasePipeline.class);
 
     private Pipeline pipeline;
 
