@@ -36,7 +36,9 @@ public class ConvertABPipeline extends BaseConvertPipeline {
                 .addParameter(self, "from")
                 .addParameter(TypeName.get(getConvertStrategyType()), "to")
                 .returns(TypeName.get(getConvertStrategyType()));
-        buildConvertAB.addStatement("if (from == null || to == null) return to");
+        buildConvertAB.addStatement("if (from == null) return to");
+        buildConvertAB.addStatement("if (to == null) to = new $T()", getConvertStrategyType());
+
         return typeSpec;
     }
 
