@@ -6,6 +6,7 @@ import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.support.pipeline.BasePipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtendsStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.ExtraStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
 import cc.eamon.open.mapping.mapper.util.ClassUtils;
 import com.squareup.javapoet.ClassName;
@@ -23,6 +24,8 @@ import javax.lang.model.element.Modifier;
 public class BuildMapPipeline extends BasePipeline {
 
     private MethodSpec.Builder buildMapMethodSpec = null;
+
+    private ExtraStrategy extraStrategy;
 
     public BuildMapPipeline(Pipeline pipeline) {
         super(pipeline);
@@ -47,6 +50,8 @@ public class BuildMapPipeline extends BasePipeline {
             buildMapMethodSpec.addStatement("Map<String, Object> map = new $T<>()", ClassUtils.getLinkedHashMap());
         }
 
+        extraStrategy = (ExtraStrategy) type.getStrategies().get(MapperEnum.EXTRA.getName());
+
         return typeSpec;
     }
 
@@ -54,12 +59,18 @@ public class BuildMapPipeline extends BasePipeline {
     public FieldSpec.Builder buildSelfField(MapperField field, FieldSpec.Builder fieldSpec) {
         RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
         buildMapMethodSpec.addStatement("map.put(\"" + renameStrategy.getName() + "\",this." + renameStrategy.getName() + ")");
+
         return fieldSpec;
     }
 
     @Override
     public TypeSpec.Builder buildTypeAfter(MapperType type, TypeSpec.Builder typeSpec) {
-
+        if (extraStrategy.open()) {
+            for (MapperField extraField : extraStrategy.getMapperFields()) {
+                RenameStrategy extraRenameStrategy = (RenameStrategy) extraField.getStrategies().get(MapperEnum.RENAME.getName());
+                buildMapMethodSpec.addStatement("map.put(\"" + extraRenameStrategy.getName() + "\",this." + extraRenameStrategy.getName() + ")");
+            }
+        }
         buildMapMethodSpec.addStatement("return map");
         typeSpec.addMethod(buildMapMethodSpec.build());
         return typeSpec;
