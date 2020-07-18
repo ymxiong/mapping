@@ -40,7 +40,7 @@ public class MapperIgnoreFactory extends MapperBaseFactory implements FieldFacto
         for (int i = 0; i < mapperIgnore.value().length; i++) {
 
             // get current value
-            if (!mapper.equals(mapperIgnore.value()[i])){
+            if (!mapper.equals(mapperIgnore.value()[i])) {
                 continue;
             }
 
@@ -53,7 +53,7 @@ public class MapperIgnoreFactory extends MapperBaseFactory implements FieldFacto
 
     @Override
     public MapperStrategy buildStrategy(List<MapperDetail> details) {
-        if (details == null || details.size() == 0){
+        if (details == null || details.size() == 0) {
             return new IgnoreNormalStrategy();
         }
         return new IgnoreEnabledStrategy();

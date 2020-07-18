@@ -12,6 +12,7 @@ import cc.eamon.open.mapping.mapper.support.detail.DefaultValueDetail;
 public class DefaultValueEnableStrategy extends MapperBaseStrategy implements DefaultValueStrategy {
 
     private DefaultValueDetail detail;
+
     @Override
     public String getDefaultValue() {
         return detail.getDefaultValue();

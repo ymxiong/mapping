@@ -49,7 +49,7 @@ public class InitMapperExtraPipeline extends BasePipeline {
                     Modifier.PUBLIC);
         }
 
-        if (field.getDefaultValue()!=null) {
+        if (field.getDefaultValue() != null) {
             fieldSpec.initializer(field.getDefaultValue());
         }
 

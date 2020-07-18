@@ -10,6 +10,7 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperStrategy;
 public interface DefaultValueStrategy extends MapperStrategy {
     /**
      * get the note of target field
+     *
      * @return note
      */
     String getDefaultValue();

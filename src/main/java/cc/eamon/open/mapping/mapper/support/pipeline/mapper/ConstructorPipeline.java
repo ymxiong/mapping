@@ -29,6 +29,7 @@ public class ConstructorPipeline extends BasePipeline {
     public ConstructorPipeline(Pipeline pipeline) {
         super(pipeline);
     }
+
     @Override
     public TypeSpec.Builder buildTypeBefore(MapperType type, TypeSpec.Builder typeSpec) {
         // type strategies
@@ -53,9 +54,9 @@ public class ConstructorPipeline extends BasePipeline {
         ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
         ConstructorIgnoreStrategy constructorIgnoreStrategy = (ConstructorIgnoreStrategy) field.getStrategies().get(MapperEnum.CONSTRUCTORIGNORE.getName());
 
-        if (!constructorIgnoreStrategy.ignore()){
-            parameterConstructorMethodSpec.addParameter(TypeName.get(modifyStrategy.getModifyType()),renameStrategy.getName());
-            parameterConstructorMethodSpec.addStatement("this." + renameStrategy.getName() + "=" +renameStrategy.getName());
+        if (!constructorIgnoreStrategy.ignore()) {
+            parameterConstructorMethodSpec.addParameter(TypeName.get(modifyStrategy.getModifyType()), renameStrategy.getName());
+            parameterConstructorMethodSpec.addStatement("this." + renameStrategy.getName() + "=" + renameStrategy.getName());
         }
 
         return fieldSpec;

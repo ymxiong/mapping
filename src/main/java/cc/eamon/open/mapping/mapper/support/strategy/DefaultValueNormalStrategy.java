@@ -10,7 +10,7 @@ import cc.eamon.open.mapping.mapper.structure.strategy.MapperBaseStrategy;
 public class DefaultValueNormalStrategy extends MapperBaseStrategy implements DefaultValueStrategy {
 
     @Override
-    public String  getDefaultValue() {
+    public String getDefaultValue() {
         return null;
     }
 }

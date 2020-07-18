@@ -34,7 +34,7 @@ public class MapperConstructorIgnoreFactory extends MapperBaseFactory implements
         for (int i = 0; i < mapperConstructorIgnore.value().length; i++) {
 
             // get current value
-            if (!mapper.equals(mapperConstructorIgnore.value()[i])){
+            if (!mapper.equals(mapperConstructorIgnore.value()[i])) {
                 continue;
             }
             // new detail
@@ -46,7 +46,7 @@ public class MapperConstructorIgnoreFactory extends MapperBaseFactory implements
 
     @Override
     public MapperStrategy buildStrategy(List<MapperDetail> details) {
-        if (details == null || details.size() == 0){
+        if (details == null || details.size() == 0) {
             return new ConstructorIgnoreNormalStrategy();
         }
         return new ConstructorIgnoreEnableStrategy();

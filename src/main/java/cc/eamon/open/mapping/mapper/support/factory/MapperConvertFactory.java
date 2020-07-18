@@ -73,7 +73,7 @@ public class MapperConvertFactory extends MapperBaseFactory implements TypeFacto
         }
         ConvertEnableStrategy strategy = new ConvertEnableStrategy();
         List<ConvertDetail> convertDetails = new ArrayList<>();
-        details.forEach(detail-> convertDetails.add((ConvertDetail) detail));
+        details.forEach(detail -> convertDetails.add((ConvertDetail) detail));
         strategy.setDetails(convertDetails);
         return strategy;
     }
