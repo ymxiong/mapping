@@ -36,6 +36,9 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
 
         Map<String, Object> annotationValuesMap = MapperUtils.buildAnnotationFieldsMap(annotationMirror);
         List<TypeMirror> typeValues = MapperUtils.buildAnnotationValuesToTypeMirrorList(annotationValuesMap, "type");
+        //???
+        List<String> defalutValues = MapperUtils.buildAnnotationValuesToStringList(annotationValuesMap, "defaultValues");
+
         // check annotation para length
         if (mapperExtra.value().length == 0 || mapperExtra.name().length == 0 || typeValues.size() == 0) {
             return null;
@@ -88,6 +91,13 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
                 detail.setList(mapperExtra.list()[i]);
             }
 
+            if (i >= defalutValues.size()) {
+                // TODO: LOG NOT COMPATIBLE INFO
+
+                break;
+            } else {
+                detail.setDefaultValue(defalutValues.get(i));
+            }
             details.add(detail);
         }
 

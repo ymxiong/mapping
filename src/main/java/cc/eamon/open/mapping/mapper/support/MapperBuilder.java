@@ -2,6 +2,7 @@ package cc.eamon.open.mapping.mapper.support;
 
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
+import cc.eamon.open.mapping.mapper.support.detail.DefaultValueDetail;
 import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.convert.BaseConvertPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.convert.ConvertABPipeline;
@@ -36,6 +37,7 @@ public class MapperBuilder {
     public static TypeSpec build(MapperType type) {
 
         Pipeline mapperPipeline = new InitMapperPipeline();
+        mapperPipeline = new ConstructorPipeline(mapperPipeline);
         mapperPipeline = new BuildMapperStaticPipeline(mapperPipeline);
         mapperPipeline = new BuildMapPipeline(mapperPipeline);
         mapperPipeline = new BuildMapStaticPipeline(mapperPipeline);
@@ -57,6 +59,12 @@ public class MapperBuilder {
 
             // build field
             FieldSpec.Builder fieldSpec = mapperPipeline.buildField(field, null);
+//
+//            //build defaultValue
+//            DefaultValueStrategy defaultValueStrategy=(DefaultValueStrategy) field.getStrategies().get(MapperEnum.DEFAULTVALUE.getName());
+//            fieldSpec.initializer(defaultValueStrategy.getDefaultValue());
+//            //
+
             typeSpec.addField(fieldSpec.build());
         }
 

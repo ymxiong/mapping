@@ -23,9 +23,13 @@ public enum MapperEnum {
 
     IGNORE("IGNORE", MapperIgnore.class, new MapperIgnoreFactory()),
 
+    CONSTRUCTORIGNORE("CONSTRUCTORIGNORE", MapperConstructorIgnore.class, new MapperConstructorIgnoreFactory()),
+
     MODIFY("MODIFY", MapperModify.class, new MapperModifyFactory()),
 
     RENAME("RENAME", MapperRename.class, new MapperRenameFactory()),
+
+    DEFAULTVALUE("DEFAULTVALUE", MapperDefaultValue.class, new MapperDefaultValueFactory()),
 
     CONVERT("CONVERT", MapperConvert.class, new MapperConvertFactory());
 

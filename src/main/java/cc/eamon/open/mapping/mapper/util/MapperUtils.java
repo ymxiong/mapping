@@ -61,6 +61,32 @@ public class MapperUtils {
     }
 
     /**
+     * build string annotation value list
+     * usage for build string annotation value list
+     *
+     * @param annotationValuesMap values map for annotation value
+     * @param key                 filter key
+     * @return string values
+     */
+    public static List<String> buildAnnotationValuesToStringList(Map<String, Object> annotationValuesMap, String key) {
+        List<String> defaultValuesList = new ArrayList<>();
+        if (annotationValuesMap.get(key) == null) {
+            return defaultValuesList;
+        }
+
+        // build target field key to string list
+        if (annotationValuesMap.get(key) instanceof List) {
+            List annotationValueList = (List) annotationValuesMap.get(key);
+            for (Object annotationValueObject : annotationValueList) {
+                if (((AnnotationValue) annotationValueObject).getValue() instanceof String) {
+                    defaultValuesList.add((String) ((AnnotationValue) annotationValueObject).getValue());
+                }
+            }
+        }
+        return defaultValuesList;
+    }
+
+    /**
      * get a single annotation mirror by target type name from a AnnotationMirror list
      *
      * @param annotationMirrors annotation mirror list
@@ -80,6 +106,8 @@ public class MapperUtils {
         }
         return annotationMirror;
     }
+
+
 
     /**
      * load super class element from type element

@@ -21,6 +21,8 @@ public class ExtraDetail implements MapperDetail {
 
     private Boolean list;
 
+    private String defaultValue;
+
     public String getMapper() {
         return mapper;
     }
@@ -59,5 +61,13 @@ public class ExtraDetail implements MapperDetail {
 
     public void setList(Boolean list) {
         this.list = list;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }

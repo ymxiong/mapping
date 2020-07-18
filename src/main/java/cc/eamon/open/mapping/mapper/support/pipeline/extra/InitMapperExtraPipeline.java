@@ -4,6 +4,7 @@ import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.support.pipeline.BasePipeline;
+import cc.eamon.open.mapping.mapper.support.strategy.ExtraStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ModifyStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
 import cc.eamon.open.mapping.mapper.util.ClassUtils;
@@ -39,13 +40,17 @@ public class InitMapperExtraPipeline extends BasePipeline {
             fieldSpec = FieldSpec.builder(
                     ClassUtils.getParameterizedList(TypeName.get(modifyStrategy.getModifyType())),
                     renameStrategy.getName(),
-                    Modifier.PUBLIC);
+                    Modifier.PUBLIC).initializer(field.getDefaultValue());
+
         } else {
             fieldSpec = FieldSpec.builder(
                     TypeName.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
-                    Modifier.PUBLIC);
+                    Modifier.PUBLIC).initializer(field.getDefaultValue());
         }
+
+
+
         return fieldSpec;
     }
 

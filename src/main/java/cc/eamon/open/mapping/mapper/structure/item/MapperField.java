@@ -21,6 +21,10 @@ public class MapperField {
     private String[] typeArgs;
 
     private Boolean list = false;
+    /**
+     * temp
+     */
+    private String defaultValue;
 
     private Map<String, MapperStrategy> strategies;
 
@@ -70,5 +74,13 @@ public class MapperField {
 
     public void setStrategies(Map<String, MapperStrategy> strategies) {
         this.strategies = strategies;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }

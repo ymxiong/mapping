@@ -6,22 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Eamon on 2018/9/29.
+ * Created by Lucas on 2019/4/2.
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.SOURCE)
-public @interface MapperExtra {
+public @interface MapperDefaultValue {
 
     String[] value() default {};
 
-    String[] name() default {};
-
-    Class<?>[] type() default {};
-
-    String[] typeArgs() default {};
-
-    boolean[] list() default {};
-
-    String[] defaultValues() default {};
+    String[] defaultValue() default {};
 
 }

@@ -53,6 +53,7 @@ public class InitMapperPipeline extends BasePipeline {
         RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
         ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
         DocStrategy fieldDocStrategy = (DocStrategy) field.getStrategies().get(MapperEnum.DOC.getName());
+        DefaultValueStrategy defaultValueStrategy=(DefaultValueStrategy) field.getStrategies().get(MapperEnum.DEFAULTVALUE.getName());
         fieldSpec = FieldSpec.builder(
                 TypeName.get(modifyStrategy.getModifyType()),
                 renameStrategy.getName(),
@@ -63,6 +64,9 @@ public class InitMapperPipeline extends BasePipeline {
                     .addMember(" note", "\"" + fieldDocStrategy.getNote() + "\"")
                     .build();
             fieldSpec.addAnnotation(annotationSpec);
+        }
+        if (defaultValueStrategy.getDefaultValue()!=null){
+            fieldSpec.initializer(defaultValueStrategy.getDefaultValue());
         }
         return fieldSpec;
     }
