@@ -6,6 +6,7 @@ import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.support.pipeline.BasePipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
 import cc.eamon.open.mapping.mapper.support.strategy.ConstructorIgnoreStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.ModifyStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -49,10 +50,11 @@ public class ConstructorPipeline extends BasePipeline {
     @Override
     public FieldSpec.Builder buildSelfField(MapperField field, FieldSpec.Builder fieldSpec) {
         RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
+        ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
         ConstructorIgnoreStrategy constructorIgnoreStrategy = (ConstructorIgnoreStrategy) field.getStrategies().get(MapperEnum.CONSTRUCTORIGNORE.getName());
 
         if (!constructorIgnoreStrategy.ignore()){
-            parameterConstructorMethodSpec.addParameter(TypeName.get(field.getType()),renameStrategy.getName());
+            parameterConstructorMethodSpec.addParameter(TypeName.get(modifyStrategy.getModifyType()),renameStrategy.getName());
             parameterConstructorMethodSpec.addStatement("this." + renameStrategy.getName() + "=" +renameStrategy.getName());
         }
 

@@ -59,11 +59,6 @@ public class MapperBuilder {
 
             // build field
             FieldSpec.Builder fieldSpec = mapperPipeline.buildField(field, null);
-//
-//            //build defaultValue
-//            DefaultValueStrategy defaultValueStrategy=(DefaultValueStrategy) field.getStrategies().get(MapperEnum.DEFAULTVALUE.getName());
-//            fieldSpec.initializer(defaultValueStrategy.getDefaultValue());
-//            //
 
             typeSpec.addField(fieldSpec.build());
         }

@@ -40,15 +40,18 @@ public class InitMapperExtraPipeline extends BasePipeline {
             fieldSpec = FieldSpec.builder(
                     ClassUtils.getParameterizedList(TypeName.get(modifyStrategy.getModifyType())),
                     renameStrategy.getName(),
-                    Modifier.PUBLIC).initializer(field.getDefaultValue());
+                    Modifier.PUBLIC);
 
         } else {
             fieldSpec = FieldSpec.builder(
                     TypeName.get(modifyStrategy.getModifyType()),
                     renameStrategy.getName(),
-                    Modifier.PUBLIC).initializer(field.getDefaultValue());
+                    Modifier.PUBLIC);
         }
 
+        if (field.getDefaultValue()!=null) {
+            fieldSpec.initializer(field.getDefaultValue());
+        }
 
 
         return fieldSpec;

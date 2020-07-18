@@ -91,13 +91,14 @@ public class MapperExtraFactory extends MapperBaseFactory implements TypeFactory
                 detail.setList(mapperExtra.list()[i]);
             }
 
-            if (i >= defalutValues.size()) {
-                // TODO: LOG NOT COMPATIBLE INFO
-
-                break;
+            if (mapperExtra.defaultValues().length == 0) {
+                detail.setDefaultValue("null");
+            } else if (i >= mapperExtra.list().length) {
+                detail.setDefaultValue(mapperExtra.defaultValues()[mapperExtra.defaultValues().length - 1]);
             } else {
-                detail.setDefaultValue(defalutValues.get(i));
+                detail.setDefaultValue(mapperExtra.defaultValues()[i]);
             }
+
             details.add(detail);
         }
 
