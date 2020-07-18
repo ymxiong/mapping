@@ -27,6 +27,8 @@ public enum MapperEnum {
 
     RENAME("RENAME", MapperRename.class, new MapperRenameFactory()),
 
+    DEFAULTVALUE("DEFAULTVALUE", MapperDefaultValue.class, new MapperDefaultValueFactory()),
+
     CONVERT("CONVERT", MapperConvert.class, new MapperConvertFactory());
 
     private String name;
