@@ -26,14 +26,14 @@ public class ConstructorPipeline extends BasePipeline {
 
     private MethodSpec.Builder nonParameterConstructorMethodSpec;
 
+    private boolean hasField = false;
+
     public ConstructorPipeline(Pipeline pipeline) {
         super(pipeline);
     }
 
     @Override
     public TypeSpec.Builder buildTypeBefore(MapperType type, TypeSpec.Builder typeSpec) {
-        // type strategies
-        ConstructorIgnoreStrategy constructorIgnoreStrategy = (ConstructorIgnoreStrategy) type.getStrategies().get(MapperEnum.CONSTRUCTORIGNORE.getName());
 
         // init: build map
         logger.info("Mapping build init nonParameterConstructorMethodSpec:" + type.getQualifiedName());
@@ -57,6 +57,7 @@ public class ConstructorPipeline extends BasePipeline {
         if (!constructorIgnoreStrategy.ignore()) {
             parameterConstructorMethodSpec.addParameter(TypeName.get(modifyStrategy.getModifyType()), renameStrategy.getName());
             parameterConstructorMethodSpec.addStatement("this." + renameStrategy.getName() + "=" + renameStrategy.getName());
+            hasField = true;
         }
 
         return fieldSpec;
@@ -65,7 +66,7 @@ public class ConstructorPipeline extends BasePipeline {
     @Override
     public TypeSpec.Builder buildTypeAfter(MapperType type, TypeSpec.Builder typeSpec) {
         typeSpec.addMethod(nonParameterConstructorMethodSpec.build());
-        typeSpec.addMethod(parameterConstructorMethodSpec.build());
+        if (hasField) typeSpec.addMethod(parameterConstructorMethodSpec.build());
         return typeSpec;
     }
 }
