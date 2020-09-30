@@ -16,9 +16,9 @@ import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
 
 /**
- * @author: lucas
- * @date: 2020/7/18
- * @email: lucas@eamon.cc
+ * author: lucas
+ * date: 2020/7/18
+ * email: lucas@eamon.cc
  */
 public class ConstructorPipeline extends BasePipeline {
 

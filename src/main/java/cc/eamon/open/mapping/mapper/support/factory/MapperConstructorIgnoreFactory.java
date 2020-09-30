@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: lucas
- * @date: 2020/7/18
- * @email: lucas@eamon.cc
+ * author: lucas
+ * date: 2020/7/18
+ * email: lucas@eamon.cc
  */
 public class MapperConstructorIgnoreFactory extends MapperBaseFactory implements FieldFactory {
     @Override
