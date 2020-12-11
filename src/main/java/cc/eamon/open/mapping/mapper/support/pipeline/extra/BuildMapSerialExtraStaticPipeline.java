@@ -30,7 +30,7 @@ public class BuildMapSerialExtraStaticPipeline extends BasePipeline {
         // define import items
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
-        logger.info("Mapping build init buildMapSerialExtra:" + type.getQualifiedName());
+        logger.debug("Mapping build init buildMapSerialExtra:" + type.getQualifiedName());
         String buildMapSerialExtraStaticMethod = "buildSerialMapExtra";
         buildSerialMapExtraStaticMethodSpec = MethodSpec.methodBuilder(buildMapSerialExtraStaticMethod)
                 .addModifiers(Modifier.PUBLIC)

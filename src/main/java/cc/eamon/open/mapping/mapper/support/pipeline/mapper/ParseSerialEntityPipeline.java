@@ -38,7 +38,7 @@ public class ParseSerialEntityPipeline extends BasePipeline {
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
         // init: parse entity
-        logger.info("Mapping build init parseEntity:" + type.getQualifiedName());
+        logger.debug("Mapping build init parseEntity:" + type.getQualifiedName());
         String parseSerialEntityStaticMethod = "parseSerialEntity";
         parseSerialEntityStaticMethodSpec = MethodSpec.methodBuilder(parseSerialEntityStaticMethod)
                 .addModifiers(Modifier.PUBLIC)

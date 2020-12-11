@@ -29,7 +29,7 @@ public class BuildMapExtraStaticPipeline extends BasePipeline {
         // define import items
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
-        logger.info("Mapping build init buildMapExtra:" + type.getQualifiedName());
+        logger.debug("Mapping build init buildMapExtra:" + type.getQualifiedName());
         String buildMapExtraStaticMethod = "buildMapExtra";
         buildMapExtraStaticMethodSpec = MethodSpec.methodBuilder(buildMapExtraStaticMethod)
                 .addModifiers(Modifier.PUBLIC)

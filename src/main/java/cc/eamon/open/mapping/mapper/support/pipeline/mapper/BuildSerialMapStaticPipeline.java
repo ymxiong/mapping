@@ -40,7 +40,7 @@ public class BuildSerialMapStaticPipeline extends BasePipeline {
 
 
         // init: build serial map
-        logger.info("Mapping build init buildSerialMap:" + type.getQualifiedName());
+        logger.debug("Mapping build init buildSerialMap:" + type.getQualifiedName());
         String buildSerialMapStaticMethod = "buildSerialMap";
         buildSerialMapStaticMethodSpec = MethodSpec.methodBuilder(buildSerialMapStaticMethod)
                 .addModifiers(Modifier.PUBLIC)

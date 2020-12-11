@@ -28,7 +28,7 @@ public class CopyEntityPipeline extends BasePipeline {
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
         // init: copy entity
-        logger.info("Mapping build init copyEntity:" + type.getQualifiedName());
+        logger.debug("Mapping build init copyEntity:" + type.getQualifiedName());
         String copyEntityStaticMethod = "copyEntity";
         copyEntityStaticMethodSpec = MethodSpec.methodBuilder(copyEntityStaticMethod)
                 .addModifiers(Modifier.PUBLIC)

@@ -37,7 +37,7 @@ public class BuildEntityPipeline extends BasePipeline {
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
         // init: build entity
-        logger.info("Mapping build init buildEntity:" + type.getQualifiedName());
+        logger.debug("Mapping build init buildEntity:" + type.getQualifiedName());
         String buildEntityMethod = "buildEntity";
         buildEntityMethodSpec = MethodSpec.methodBuilder(buildEntityMethod)
                 .addModifiers(Modifier.PUBLIC)

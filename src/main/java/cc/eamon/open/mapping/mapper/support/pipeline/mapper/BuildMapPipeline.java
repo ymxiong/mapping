@@ -34,7 +34,7 @@ public class BuildMapPipeline extends BasePipeline {
     @Override
     public TypeSpec.Builder buildTypeBefore(MapperType type, TypeSpec.Builder typeSpec) {
         // init: build self map
-        logger.info("Mapping build init buildMap :" + type.getQualifiedName());
+        logger.debug("Mapping build init buildMap :" + type.getQualifiedName());
         ExtendsStrategy extendsStrategy = (ExtendsStrategy) type.getStrategies().get(MapperEnum.EXTENDS.getName());
 
 

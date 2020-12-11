@@ -38,7 +38,7 @@ public class BuildMapStaticPipeline extends BasePipeline {
         ClassName self = ClassName.get(type.getPackageName(), type.getSimpleName());
 
         // init: build map
-        logger.info("Mapping build init buildMap:" + type.getQualifiedName());
+        logger.debug("Mapping build init buildMap:" + type.getQualifiedName());
         String buildMapStaticMethod = "buildMap";
         buildMapStaticMethodSpec = MethodSpec.methodBuilder(buildMapStaticMethod)
                 .addModifiers(Modifier.PUBLIC)

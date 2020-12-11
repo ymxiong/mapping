@@ -2,7 +2,6 @@ package cc.eamon.open.mapping.mapper.support;
 
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
-import cc.eamon.open.mapping.mapper.support.detail.DefaultValueDetail;
 import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.convert.BaseConvertPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.convert.ConvertABPipeline;
@@ -12,7 +11,10 @@ import cc.eamon.open.mapping.mapper.support.pipeline.extra.BuildMapExtraStaticPi
 import cc.eamon.open.mapping.mapper.support.pipeline.extra.BuildMapSerialExtraStaticPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.extra.InitMapperExtraPipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.mapper.*;
-import cc.eamon.open.mapping.mapper.support.strategy.*;
+import cc.eamon.open.mapping.mapper.support.strategy.ConvertStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.ExtraStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.IgnoreStrategy;
+import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
 import cc.eamon.open.mapping.mapper.util.MapperUtils;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -109,7 +111,7 @@ public class MapperBuilder {
         mapperConvertPipeline = new ConvertABPipeline(mapperConvertPipeline);
         mapperConvertPipeline = new ConvertBAPipeline(mapperConvertPipeline);
 
-        logger.info("Mapping build init convert:" + type.getQualifiedName());
+        logger.debug("Mapping build init convert:" + type.getQualifiedName());
         for (TypeMirror convertStrategyType : convertStrategy.getTypes()) {
             Map<String, TypeMirror> fieldTypeMirrors = new HashMap<>();
             List<Element> elements = MapperUtils.loadTypeEnclosedElements(convertStrategyType);

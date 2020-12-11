@@ -36,12 +36,12 @@ public class ConstructorPipeline extends BasePipeline {
     public TypeSpec.Builder buildTypeBefore(MapperType type, TypeSpec.Builder typeSpec) {
 
         // init: build map
-        logger.info("Mapping build init nonParameterConstructorMethodSpec:" + type.getQualifiedName());
+        logger.debug("Mapping build init nonParameterConstructorMethodSpec:" + type.getQualifiedName());
         nonParameterConstructorMethodSpec = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC);
 
         // init: build map
-        logger.info("Mapping build init parameterConstructorMethodSpec:" + type.getQualifiedName());
+        logger.debug("Mapping build init parameterConstructorMethodSpec:" + type.getQualifiedName());
         parameterConstructorMethodSpec = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC);
 

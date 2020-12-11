@@ -93,7 +93,7 @@ public abstract class MapperBaseFactory implements MapperFactory {
             strategies.put(mapperEnum.getName(), strategy);
         }
 
-        logger.info("Factory strategy of element:[" + element.getSimpleName() + "]");
+        logger.debug("Factory strategy of element:[" + element.getSimpleName() + "]");
         return strategies;
     }
 
