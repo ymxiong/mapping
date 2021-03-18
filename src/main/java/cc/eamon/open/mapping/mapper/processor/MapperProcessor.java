@@ -13,8 +13,6 @@ import com.squareup.javapoet.JavaFile;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTrees;
-import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.TypeTag;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
@@ -114,9 +112,9 @@ public class MapperProcessor extends AbstractProcessor {
                             }
                         }
                 );
-                tree.accept(new TreeTranslator(){
+                tree.accept(new TreeTranslator() {
                     @Override
-                    public void visitClassDef(JCTree.JCClassDecl jcClassDecl){
+                    public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
                         importClasses(elem);
                         AST tree = new AST();
                         mapperElement.build().forEach(mapperType -> {
@@ -139,7 +137,7 @@ public class MapperProcessor extends AbstractProcessor {
         return false;
     }
 
-    private void importClasses(Element elem){
+    private void importClasses(Element elem) {
         TreePath treePath = javacTrees.getPath(elem);
         Tree leaf = treePath.getLeaf();
         if (treePath.getCompilationUnit() instanceof JCTree.JCCompilationUnit && leaf instanceof JCTree) {

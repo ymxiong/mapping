@@ -3,7 +3,6 @@ package cc.eamon.open.mapping.ast.factory;
 import cc.eamon.open.mapping.ast.handler.AST;
 import cc.eamon.open.mapping.ast.item.MapperInfo;
 import cc.eamon.open.mapping.ast.pipeline.*;
-import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.support.strategy.ConvertStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.ExtraEnableStrategy;
@@ -16,7 +15,7 @@ import com.sun.tools.javac.util.Names;
  * @author lzr
  * @date 2021/3/10 8:47
  */
-public class DefaultPipelineFactory implements PipelineFactory{
+public class DefaultPipelineFactory implements PipelineFactory {
 
 
     @Override
@@ -28,13 +27,13 @@ public class DefaultPipelineFactory implements PipelineFactory{
         mapperInfo = pipeline.buildPipeline(jcClassDecl, treeMaker, names);
         pipeline.invoke(tree);
         ExtraStrategy extraStrategy = (ExtraStrategy) mapperInfo.getMapperType().getStrategies().get(MapperEnum.EXTRA.getName());
-        if(extraStrategy instanceof ExtraEnableStrategy){
+        if (extraStrategy instanceof ExtraEnableStrategy) {
             pipeline = new ExtraMapperMethodPipeline(mapperInfo);
             mapperInfo = pipeline.buildPipeline(jcClassDecl, treeMaker, names);
             pipeline.invoke(tree);
         }
         ConvertStrategy convertStrategy = (ConvertStrategy) mapperInfo.getMapperType().getStrategies().get(MapperEnum.CONVERT.getName());
-        if(convertStrategy.open()){
+        if (convertStrategy.open()) {
             pipeline = new ConvertMapperMethodPipeline(mapperInfo);
             mapperInfo = pipeline.buildPipeline(jcClassDecl, treeMaker, names);
             pipeline.invoke(tree);
