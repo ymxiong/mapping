@@ -4,6 +4,7 @@ import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
+import cc.eamon.open.mapping.mapper.support.pipeline.convert.strategy.ConvertStrategyEnum;
 import cc.eamon.open.mapping.mapper.support.strategy.ModifyStrategy;
 import cc.eamon.open.mapping.mapper.support.strategy.RenameStrategy;
 import cc.eamon.open.mapping.mapper.util.StringUtils;
@@ -50,15 +51,10 @@ public class ConvertBAPipeline extends BaseConvertPipeline {
 
         String fieldUpperCase = StringUtils.firstWordToUpperCase(renameStrategy.getName());
 
-        if (!modifyStrategy.getModifyType().toString().equals(getFieldTypeMirrors().get(renameStrategy.getName()).toString())) {
-            logger.warn("Mapping build convert type not fit, try to convert:" + modifyStrategy.getModifyType().toString() + " to " + getFieldTypeMirrors().get(renameStrategy.getName()));
-            String fixme = "// FIXME: type[" + renameStrategy.getElementName() + "] do not fit " + getFieldTypeMirrors().toString() + "[" + renameStrategy.getName() + "]";
-            buildConvertBA.addStatement(fixme);
-            buildConvertBA.addStatement("// " + modifyStrategy.getRecoverName("to").replace("$", "from.get" + fieldUpperCase + "()"));
-            return fieldSpec;
-        }
+        String from = modifyStrategy.getModifyType().toString();
+        String to = getFieldTypeMirrors().get(renameStrategy.getName()).toString();
 
-        buildConvertBA.addStatement(modifyStrategy.getRecoverName("to").replace("$", "from.get" + fieldUpperCase + "()"));
+        ConvertStrategyEnum.getByKey(from, to).getStrategy().convertBA(buildConvertBA, from, to, modifyStrategy, fieldUpperCase);
 
         return fieldSpec;
     }
