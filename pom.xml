@@ -17,6 +17,7 @@
         <guava-version>27.0.1-jre</guava-version>
         <fastjson-version>1.2.60</fastjson-version>
         <slf4j-version>1.7.26</slf4j-version>
+        <jakarta.validation-api-version>2.0.2</jakarta.validation-api-version>
     </properties>
 
     <parent>
@@ -125,6 +126,11 @@
             <version>${slf4j-version}</version>
         </dependency>
         <!-- end of slf4j api-->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>2.0.2</version>
+        </dependency>
 
     </dependencies>
 

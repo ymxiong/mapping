@@ -9,6 +9,8 @@ import cc.eamon.open.mapping.mapper.support.strategy.*;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 /**
  * Author: eamon
@@ -53,7 +55,12 @@ public class InitMapperPipeline extends BasePipeline {
         RenameStrategy renameStrategy = (RenameStrategy) field.getStrategies().get(MapperEnum.RENAME.getName());
         ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
         DocStrategy fieldDocStrategy = (DocStrategy) field.getStrategies().get(MapperEnum.DOC.getName());
-        DefaultValueStrategy defaultValueStrategy=(DefaultValueStrategy) field.getStrategies().get(MapperEnum.DEFAULTVALUE.getName());
+        DefaultValueStrategy defaultValueStrategy = (DefaultValueStrategy) field.getStrategies().get(MapperEnum.DEFAULTVALUE.getName());
+        // TODO:添加各种注解
+        NotNullStrategy notNullStrategy = (NotNullStrategy) field.getStrategies().get(MapperEnum.NOTNULL.getName());
+        NullStrategy nullStrategy = (NullStrategy) field.getStrategies().get(MapperEnum.NULL.getName());
+
+
         fieldSpec = FieldSpec.builder(
                 TypeName.get(modifyStrategy.getModifyType()),
                 renameStrategy.getName(),
@@ -65,9 +72,23 @@ public class InitMapperPipeline extends BasePipeline {
                     .build();
             fieldSpec.addAnnotation(annotationSpec);
         }
-        if (defaultValueStrategy.getDefaultValue()!=null){
+        if (defaultValueStrategy.getDefaultValue() != null) {
             fieldSpec.initializer(defaultValueStrategy.getDefaultValue());
         }
+        if (notNullStrategy.getMessage() != null) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(NotNull.class)
+                    .addMember(" message", "\"" + notNullStrategy.getMessage() + "\"")
+                    .build();
+            fieldSpec.addAnnotation(annotationSpec);
+        }
+        if (nullStrategy.getMessage() != null) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(Null.class)
+                    .addMember(" message", "\"" + nullStrategy.getMessage() + "\"")
+                    .build();
+            fieldSpec.addAnnotation(annotationSpec);
+        }
+
+
         return fieldSpec;
     }
 
