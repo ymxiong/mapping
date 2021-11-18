@@ -39,6 +39,7 @@ public class MapperBuilder {
     public static TypeSpec build(MapperType type) {
 
         Pipeline mapperPipeline = new InitMapperPipeline();
+        mapperPipeline = new ValidMapperPipeline(mapperPipeline);
         mapperPipeline = new ConstructorPipeline(mapperPipeline);
         mapperPipeline = new BuildMapperStaticPipeline(mapperPipeline);
         mapperPipeline = new BuildMapPipeline(mapperPipeline);

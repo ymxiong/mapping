@@ -55,13 +55,6 @@ public class InitMapperPipeline extends BasePipeline {
         ModifyStrategy modifyStrategy = (ModifyStrategy) field.getStrategies().get(MapperEnum.MODIFY.getName());
         DocStrategy fieldDocStrategy = (DocStrategy) field.getStrategies().get(MapperEnum.DOC.getName());
         DefaultValueStrategy defaultValueStrategy = (DefaultValueStrategy) field.getStrategies().get(MapperEnum.DEFAULTVALUE.getName());
-        // TODO:添加各种注解
-        NotNullStrategy notNullStrategy = (NotNullStrategy) field.getStrategies().get(MapperEnum.NOTNULL.getName());
-        NullStrategy nullStrategy = (NullStrategy) field.getStrategies().get(MapperEnum.NULL.getName());
-        NotEmptyStrategy notEmptyStrategy = (NotEmptyStrategy) field.getStrategies().get(MapperEnum.NOTEMPTY.getName());
-        NotBlankStrategy notBlankStrategy = (NotBlankStrategy) field.getStrategies().get(MapperEnum.NOTBLANK.getName());
-        MaxStrategy maxStrategy = (MaxStrategy) field.getStrategies().get(MapperEnum.MAX.getName());
-        MinStrategy minStrategy = (MinStrategy) field.getStrategies().get(MapperEnum.MIN.getName());
 
 
         fieldSpec = FieldSpec.builder(
@@ -77,50 +70,6 @@ public class InitMapperPipeline extends BasePipeline {
         }
         if (defaultValueStrategy.getDefaultValue() != null) {
             fieldSpec.initializer(defaultValueStrategy.getDefaultValue());
-        }
-        if (notNullStrategy.open()) {
-            AnnotationSpec.Builder builder = AnnotationSpec.builder(NotNull.class);
-            if (notNullStrategy.getMessage() != null) {
-                builder.addMember(" message", "\"" + notNullStrategy.getMessage() + "\"");
-            }
-            fieldSpec.addAnnotation(builder.build());
-        }
-        if (nullStrategy.open()) {
-            AnnotationSpec.Builder builder = AnnotationSpec.builder(Null.class);
-            if (nullStrategy.getMessage() != null) {
-                builder.addMember(" message", "\"" + nullStrategy.getMessage() + "\"");
-            }
-            fieldSpec.addAnnotation(builder.build());
-        }
-        if (notEmptyStrategy.open()) {
-            AnnotationSpec.Builder builder = AnnotationSpec.builder(NotEmpty.class);
-            if (notEmptyStrategy.getMessage() != null) {
-                builder.addMember(" message", "\"" + notEmptyStrategy.getMessage() + "\"");
-            }
-            fieldSpec.addAnnotation(builder.build());
-        }
-        if (notBlankStrategy.open()) {
-            AnnotationSpec.Builder builder = AnnotationSpec.builder(NotBlank.class);
-            if (notBlankStrategy.getMessage() != null) {
-                builder.addMember(" message", "\"" + notBlankStrategy.getMessage() + "\"");
-            }
-            fieldSpec.addAnnotation(builder.build());
-        }
-        if (maxStrategy.open()) {
-            AnnotationSpec.Builder builder = AnnotationSpec.builder(Max.class);
-            if (maxStrategy.getMessage() != null) {
-                builder.addMember("message", "\"" + maxStrategy.getMessage() + "\"");
-            }
-            builder.addMember("value", String.valueOf(maxStrategy.getMaxValue()));
-            fieldSpec.addAnnotation(builder.build());
-        }
-        if (minStrategy.open()) {
-            AnnotationSpec.Builder builder = AnnotationSpec.builder(Min.class);
-            if (minStrategy.getMessage() != null) {
-                builder.addMember(" message", "\"" + minStrategy.getMessage() + "\"");
-            }
-            builder.addMember("value", String.valueOf(minStrategy.getMinValue()));
-            fieldSpec.addAnnotation(builder.build());
         }
 
 
