@@ -14,4 +14,8 @@ public class NotEmptyNormalStrategy extends MapperBaseStrategy implements NotEmp
         return null;
     }
 
+    @Override
+    public Boolean open() {
+        return false;
+    }
 }

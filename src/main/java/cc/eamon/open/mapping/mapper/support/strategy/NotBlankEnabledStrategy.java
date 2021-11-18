@@ -22,4 +22,9 @@ public class NotBlankEnabledStrategy extends MapperBaseStrategy implements NotBl
     public void setDetail(NotBlankDetail detail) {
         this.detail = detail;
     }
+
+    @Override
+    public Boolean open() {
+        return true;
+    }
 }

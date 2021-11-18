@@ -27,4 +27,9 @@ public class MinEnabledStrategy extends MapperBaseStrategy implements MinStrateg
     public void setDetail(MinDetail detail) {
         this.detail = detail;
     }
+
+    @Override
+    public Boolean open() {
+        return true;
+    }
 }

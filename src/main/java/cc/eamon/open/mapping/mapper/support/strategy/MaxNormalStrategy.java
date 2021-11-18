@@ -21,5 +21,9 @@ public class MaxNormalStrategy extends MapperBaseStrategy implements MaxStrategy
         return 0;
     }
 
+    @Override
+    public Boolean open() {
+        return false;
+    }
 
 }

@@ -11,4 +11,5 @@ public interface NotBlankStrategy extends MapperStrategy {
 
     String getMessage();
 
+    Boolean open();
 }

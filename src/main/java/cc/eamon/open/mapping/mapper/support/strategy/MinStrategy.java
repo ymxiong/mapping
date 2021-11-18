@@ -13,4 +13,5 @@ public interface MinStrategy extends MapperStrategy {
 
     long getMinValue();
 
+    Boolean open();
 }

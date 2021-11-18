@@ -13,4 +13,6 @@ public interface MaxStrategy extends MapperStrategy {
 
 
     long getMaxValue();
+
+    Boolean open();
 }

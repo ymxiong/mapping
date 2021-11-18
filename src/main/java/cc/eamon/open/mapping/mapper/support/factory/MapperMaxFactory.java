@@ -60,6 +60,7 @@ public class MapperMaxFactory extends MapperBaseFactory implements FieldFactory 
                 // TODO: LOG NOT COMPATIBLE INFO
             } else {
                 detail.setMessage(mapperMax.message()[i]);
+                detail.setValue(mapperMax.maxValue()[i]);
             }
             details.add(detail);
         }

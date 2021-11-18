@@ -22,4 +22,9 @@ public class NullEnabledStrategy extends MapperBaseStrategy implements NullStrat
     public void setDetail(NullDetail detail) {
         this.detail = detail;
     }
+
+    @Override
+    public Boolean open() {
+        return true;
+    }
 }

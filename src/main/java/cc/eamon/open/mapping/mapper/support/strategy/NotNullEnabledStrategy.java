@@ -21,4 +21,9 @@ public class NotNullEnabledStrategy extends MapperBaseStrategy implements NotNul
     public void setDetail(NotNullDetail detail) {
         this.detail = detail;
     }
+
+    @Override
+    public Boolean open() {
+        return true;
+    }
 }

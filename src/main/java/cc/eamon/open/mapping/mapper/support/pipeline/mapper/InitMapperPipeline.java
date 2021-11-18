@@ -78,43 +78,49 @@ public class InitMapperPipeline extends BasePipeline {
         if (defaultValueStrategy.getDefaultValue() != null) {
             fieldSpec.initializer(defaultValueStrategy.getDefaultValue());
         }
-        if (notNullStrategy.getMessage() != null) {
-            AnnotationSpec annotationSpec = AnnotationSpec.builder(NotNull.class)
-                    .addMember(" message", "\"" + notNullStrategy.getMessage() + "\"")
-                    .build();
-            fieldSpec.addAnnotation(annotationSpec);
+        if (notNullStrategy.open()) {
+            AnnotationSpec.Builder builder = AnnotationSpec.builder(NotNull.class);
+            if (notNullStrategy.getMessage() != null) {
+                builder.addMember(" message", "\"" + notNullStrategy.getMessage() + "\"");
+            }
+            fieldSpec.addAnnotation(builder.build());
         }
-        if (nullStrategy.getMessage() != null) {
-            AnnotationSpec annotationSpec = AnnotationSpec.builder(Null.class)
-                    .addMember(" message", "\"" + nullStrategy.getMessage() + "\"")
-                    .build();
-            fieldSpec.addAnnotation(annotationSpec);
+        if (nullStrategy.open()) {
+            AnnotationSpec.Builder builder = AnnotationSpec.builder(Null.class);
+            if (nullStrategy.getMessage() != null) {
+                builder.addMember(" message", "\"" + nullStrategy.getMessage() + "\"");
+            }
+            fieldSpec.addAnnotation(builder.build());
         }
-        if (notEmptyStrategy.getMessage() != null) {
-            AnnotationSpec annotationSpec = AnnotationSpec.builder(NotEmpty.class)
-                    .addMember(" message", "\"" + notEmptyStrategy.getMessage() + "\"")
-                    .build();
-            fieldSpec.addAnnotation(annotationSpec);
+        if (notEmptyStrategy.open()) {
+            AnnotationSpec.Builder builder = AnnotationSpec.builder(NotEmpty.class);
+            if (notEmptyStrategy.getMessage() != null) {
+                builder.addMember(" message", "\"" + notEmptyStrategy.getMessage() + "\"");
+            }
+            fieldSpec.addAnnotation(builder.build());
         }
-        if (notBlankStrategy.getMessage() != null) {
-            AnnotationSpec annotationSpec = AnnotationSpec.builder(NotBlank.class)
-                    .addMember(" message", "\"" + notBlankStrategy.getMessage() + "\"")
-                    .build();
-            fieldSpec.addAnnotation(annotationSpec);
+        if (notBlankStrategy.open()) {
+            AnnotationSpec.Builder builder = AnnotationSpec.builder(NotBlank.class);
+            if (notBlankStrategy.getMessage() != null) {
+                builder.addMember(" message", "\"" + notBlankStrategy.getMessage() + "\"");
+            }
+            fieldSpec.addAnnotation(builder.build());
         }
-        if (maxStrategy.getMessage() != null) {
-            AnnotationSpec annotationSpec = AnnotationSpec.builder(Max.class)
-                    .addMember(" message", "\"" + maxStrategy.getMessage() + "\"")
-                    .addMember(" value", String.valueOf(maxStrategy.getMaxValue()))
-                    .build();
-            fieldSpec.addAnnotation(annotationSpec);
+        if (maxStrategy.open()) {
+            AnnotationSpec.Builder builder = AnnotationSpec.builder(Max.class);
+            if (maxStrategy.getMessage() != null) {
+                builder.addMember("message", "\"" + maxStrategy.getMessage() + "\"");
+            }
+            builder.addMember("value", String.valueOf(maxStrategy.getMaxValue()));
+            fieldSpec.addAnnotation(builder.build());
         }
-        if (minStrategy.getMessage() != null) {
-            AnnotationSpec annotationSpec = AnnotationSpec.builder(Min.class)
-                    .addMember(" message", "\"" + minStrategy.getMessage() + "\"")
-                    .addMember(" value", String.valueOf(minStrategy.getMinValue()))
-                    .build();
-            fieldSpec.addAnnotation(annotationSpec);
+        if (minStrategy.open()) {
+            AnnotationSpec.Builder builder = AnnotationSpec.builder(Min.class);
+            if (minStrategy.getMessage() != null) {
+                builder.addMember(" message", "\"" + minStrategy.getMessage() + "\"");
+            }
+            builder.addMember("value", String.valueOf(minStrategy.getMinValue()));
+            fieldSpec.addAnnotation(builder.build());
         }
 
 

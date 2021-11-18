@@ -14,4 +14,8 @@ public class NotNullNormalStrategy extends MapperBaseStrategy implements NotNull
         return null;
     }
 
+    @Override
+    public Boolean open() {
+        return false;
+    }
 }

@@ -27,4 +27,9 @@ public class MaxEnabledStrategy extends MapperBaseStrategy implements MaxStrateg
     public void setDetail(MaxDetail detail) {
         this.detail = detail;
     }
+
+    @Override
+    public Boolean open() {
+        return true;
+    }
 }

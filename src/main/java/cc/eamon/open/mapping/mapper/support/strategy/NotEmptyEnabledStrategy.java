@@ -22,4 +22,9 @@ public class NotEmptyEnabledStrategy extends MapperBaseStrategy implements NotEm
     public void setDetail(NotEmptyDetail detail) {
         this.detail = detail;
     }
+
+    @Override
+    public Boolean open() {
+        return true;
+    }
 }

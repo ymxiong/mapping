@@ -60,6 +60,7 @@ public class MapperMinFactory extends MapperBaseFactory implements FieldFactory 
                 // TODO: LOG NOT COMPATIBLE INFO
             } else {
                 detail.setMessage(mapperMin.message()[i]);
+                detail.setValue(mapperMin.minValue()[i]);
             }
             details.add(detail);
         }

@@ -20,5 +20,9 @@ public class MinNormalStrategy extends MapperBaseStrategy implements MinStrategy
         return 0;
     }
 
+    @Override
+    public Boolean open() {
+        return false;
+    }
 
 }

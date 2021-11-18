@@ -11,4 +11,6 @@ public interface NullStrategy extends MapperStrategy {
 
     String getMessage();
 
+    Boolean open();
+
 }

@@ -14,4 +14,9 @@ public class NullNormalStrategy extends MapperBaseStrategy implements NullStrate
         return null;
     }
 
+    @Override
+    public Boolean open() {
+        return false;
+    }
+
 }
