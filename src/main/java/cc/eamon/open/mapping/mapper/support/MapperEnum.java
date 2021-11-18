@@ -3,8 +3,7 @@ package cc.eamon.open.mapping.mapper.support;
 import cc.eamon.open.mapping.mapper.*;
 import cc.eamon.open.mapping.mapper.structure.factory.MapperFactory;
 import cc.eamon.open.mapping.mapper.support.factory.*;
-import cc.eamon.open.mapping.mapper.valid.MapperNotNull;
-import cc.eamon.open.mapping.mapper.valid.MapperNull;
+import cc.eamon.open.mapping.mapper.valid.*;
 
 import java.lang.annotation.Annotation;
 
@@ -37,7 +36,15 @@ public enum MapperEnum {
 
     NOTNULL("NOTNULL", MapperNotNull.class, new MapperNotNullFactory()),
 
-    NULL("NULL", MapperNull.class, new MapperNullFactory());
+    NULL("NULL", MapperNull.class, new MapperNullFactory()),
+
+    NOTBLANK("NOTBLANK", MapperNotBlank.class, new MapperNotBlankFactory()),
+
+    NOTEMPTY("NOTEMPTY", MapperNotEmpty.class, new MapperNotEmptyFactory()),
+
+    MAX("MAX", MapperMax.class, new MapperMaxFactory()),
+
+    MIN("MIN", MapperMin.class, new MapperMinFactory());
 
 
     private String name;

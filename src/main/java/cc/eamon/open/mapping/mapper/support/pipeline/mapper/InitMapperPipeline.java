@@ -9,8 +9,7 @@ import cc.eamon.open.mapping.mapper.support.strategy.*;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
+import javax.validation.constraints.*;
 
 /**
  * Author: eamon
@@ -59,6 +58,10 @@ public class InitMapperPipeline extends BasePipeline {
         // TODO:添加各种注解
         NotNullStrategy notNullStrategy = (NotNullStrategy) field.getStrategies().get(MapperEnum.NOTNULL.getName());
         NullStrategy nullStrategy = (NullStrategy) field.getStrategies().get(MapperEnum.NULL.getName());
+        NotEmptyStrategy notEmptyStrategy = (NotEmptyStrategy) field.getStrategies().get(MapperEnum.NOTEMPTY.getName());
+        NotBlankStrategy notBlankStrategy = (NotBlankStrategy) field.getStrategies().get(MapperEnum.NOTBLANK.getName());
+        MaxStrategy maxStrategy = (MaxStrategy) field.getStrategies().get(MapperEnum.MAX.getName());
+        MinStrategy minStrategy = (MinStrategy) field.getStrategies().get(MapperEnum.MIN.getName());
 
 
         fieldSpec = FieldSpec.builder(
@@ -84,6 +87,32 @@ public class InitMapperPipeline extends BasePipeline {
         if (nullStrategy.getMessage() != null) {
             AnnotationSpec annotationSpec = AnnotationSpec.builder(Null.class)
                     .addMember(" message", "\"" + nullStrategy.getMessage() + "\"")
+                    .build();
+            fieldSpec.addAnnotation(annotationSpec);
+        }
+        if (notEmptyStrategy.getMessage() != null) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(NotEmpty.class)
+                    .addMember(" message", "\"" + notEmptyStrategy.getMessage() + "\"")
+                    .build();
+            fieldSpec.addAnnotation(annotationSpec);
+        }
+        if (notBlankStrategy.getMessage() != null) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(NotBlank.class)
+                    .addMember(" message", "\"" + notBlankStrategy.getMessage() + "\"")
+                    .build();
+            fieldSpec.addAnnotation(annotationSpec);
+        }
+        if (maxStrategy.getMessage() != null) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(Max.class)
+                    .addMember(" message", "\"" + maxStrategy.getMessage() + "\"")
+                    .addMember(" value", String.valueOf(maxStrategy.getMaxValue()))
+                    .build();
+            fieldSpec.addAnnotation(annotationSpec);
+        }
+        if (minStrategy.getMessage() != null) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(Min.class)
+                    .addMember(" message", "\"" + minStrategy.getMessage() + "\"")
+                    .addMember(" value", String.valueOf(minStrategy.getMinValue()))
                     .build();
             fieldSpec.addAnnotation(annotationSpec);
         }
