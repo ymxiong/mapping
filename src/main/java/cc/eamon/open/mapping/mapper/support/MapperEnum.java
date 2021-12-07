@@ -44,7 +44,9 @@ public enum MapperEnum {
 
     MAX("MAX", MapperMax.class, new MapperMaxFactory()),
 
-    MIN("MIN", MapperMin.class, new MapperMinFactory());
+    MIN("MIN", MapperMin.class, new MapperMinFactory()),
+
+    ENUMVALUE("ENUMVALUE", MapperEnumValue.class, new MapperEnumValueFactory());
 
 
     private String name;

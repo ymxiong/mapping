@@ -1,15 +1,14 @@
 package cc.eamon.open.mapping.mapper.support.pipeline.mapper;
 
-import cc.eamon.open.mapping.enhancement.Doc;
 import cc.eamon.open.mapping.mapper.structure.item.MapperField;
 import cc.eamon.open.mapping.mapper.structure.item.MapperType;
 import cc.eamon.open.mapping.mapper.support.MapperEnum;
 import cc.eamon.open.mapping.mapper.support.pipeline.BasePipeline;
 import cc.eamon.open.mapping.mapper.support.pipeline.Pipeline;
 import cc.eamon.open.mapping.mapper.support.strategy.*;
+import cc.eamon.open.mapping.mapper.valid.EnumValue;
 import com.squareup.javapoet.*;
 
-import javax.lang.model.element.Modifier;
 import javax.validation.constraints.*;
 
 /**
@@ -37,6 +36,7 @@ public class ValidMapperPipeline extends BasePipeline {
         NotBlankStrategy notBlankStrategy = (NotBlankStrategy) field.getStrategies().get(MapperEnum.NOTBLANK.getName());
         MaxStrategy maxStrategy = (MaxStrategy) field.getStrategies().get(MapperEnum.MAX.getName());
         MinStrategy minStrategy = (MinStrategy) field.getStrategies().get(MapperEnum.MIN.getName());
+        EnumValueStrategy enumStrategy = (EnumValueStrategy) field.getStrategies().get(MapperEnum.ENUMVALUE.getName());
 
         if (notNullStrategy.open()) {
             AnnotationSpec.Builder builder = AnnotationSpec.builder(NotNull.class);
@@ -80,6 +80,12 @@ public class ValidMapperPipeline extends BasePipeline {
                 builder.addMember(" message", "\"" + minStrategy.getMessage() + "\"");
             }
             builder.addMember("value", String.valueOf(minStrategy.getMinValue()));
+            fieldSpec.addAnnotation(builder.build());
+        }
+        if (enumStrategy.open()) {
+            AnnotationSpec.Builder builder = AnnotationSpec.builder(EnumValue.class);
+            builder.addMember(" enumClass","\"" + enumStrategy.getEnumClass()+ "\"" );
+            builder.addMember(" enumMethod", "\"" + enumStrategy.getEnumMethod()+ "\"");
             fieldSpec.addAnnotation(builder.build());
         }
 
