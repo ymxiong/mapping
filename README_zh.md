@@ -243,7 +243,7 @@ public class User {
 
 
 
-### 扩展使用：Extra
+### 枚举校验：EnumValue
 
 场景：在更新用户的同时，同时更新用户的权限列表，此时需要给User实体加上权限列表属性
 
