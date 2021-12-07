@@ -84,6 +84,7 @@ public class ValidMapperPipeline extends BasePipeline {
         }
         if (enumStrategy.open()) {
             AnnotationSpec.Builder builder = AnnotationSpec.builder(EnumValue.class);
+            builder.addMember(" message", "\"" + enumStrategy.getMessage() + "\"");
             builder.addMember(" enumClass","\"" + enumStrategy.getEnumClass()+ "\"" );
             builder.addMember(" enumMethod", "\"" + enumStrategy.getEnumMethod()+ "\"");
             fieldSpec.addAnnotation(builder.build());

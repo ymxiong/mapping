@@ -24,6 +24,11 @@ public class EnumValueEnabledValueStrategy extends MapperBaseStrategy implements
     }
 
     @Override
+    public String getMessage() {
+        return detail.getMessage();
+    }
+
+    @Override
     public Boolean open() {
         return true;
     }

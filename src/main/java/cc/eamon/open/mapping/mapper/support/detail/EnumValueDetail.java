@@ -15,6 +15,8 @@ public class EnumValueDetail implements MapperDetail {
 
     String enumMethod;
 
+    String message;
+
     public String getEnumClass() {
         return enumClass;
     }
@@ -29,5 +31,13 @@ public class EnumValueDetail implements MapperDetail {
 
     public void setEnumMethod(String enumMethod) {
         this.enumMethod = enumMethod;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

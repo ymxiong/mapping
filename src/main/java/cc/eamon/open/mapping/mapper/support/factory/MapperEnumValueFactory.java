@@ -58,6 +58,7 @@ public class MapperEnumValueFactory extends MapperBaseFactory implements FieldFa
             EnumValueDetail detail = new EnumValueDetail();
             detail.setEnumClass(mapperEnum.enumClass());
             detail.setEnumMethod(mapperEnum.enumMethod());
+            detail.setMessage(mapperEnum.message());
             details.add(detail);
         }
 

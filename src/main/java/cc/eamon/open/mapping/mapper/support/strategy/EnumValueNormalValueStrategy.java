@@ -20,6 +20,11 @@ public class EnumValueNormalValueStrategy extends MapperBaseStrategy implements 
     }
 
     @Override
+    public String getMessage() {
+        return null;
+    }
+
+    @Override
     public Boolean open() {
         return false;
     }

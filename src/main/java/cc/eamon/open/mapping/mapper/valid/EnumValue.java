@@ -21,6 +21,8 @@ public @interface EnumValue {
 
     String enumClass();
 
+    String message();
+
     String enumMethod();
 
 

@@ -15,4 +15,6 @@ public @interface MapperEnumValue {
 
     String enumMethod();
 
+    String message();
+
 }

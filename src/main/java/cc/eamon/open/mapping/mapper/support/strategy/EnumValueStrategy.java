@@ -13,5 +13,7 @@ public interface EnumValueStrategy extends MapperStrategy {
 
     String getEnumMethod();
 
+    String getMessage();
+
     Boolean open();
 }
