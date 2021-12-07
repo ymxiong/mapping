@@ -11,10 +11,11 @@ import java.lang.annotation.Target;
 public @interface MapperEnumValue {
     String[] value() default {};
 
+    String message() default "";
+
     String enumClass();
 
-    String enumMethod();
 
-    String message();
+    String enumMethod() default "contains";
 
 }

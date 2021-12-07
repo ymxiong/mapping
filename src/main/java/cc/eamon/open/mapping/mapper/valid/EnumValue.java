@@ -21,9 +21,9 @@ public @interface EnumValue {
 
     String enumClass();
 
-    String message();
+    String message() default "";
 
-    String enumMethod();
+    String enumMethod() default "contains";
 
 
 
