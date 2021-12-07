@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 public @interface MapperEnumValue {
     String[] value() default {};
 
-    String message() default "";
+    String message() default "参数值与枚举值不匹配";
 
     String enumClass();
 

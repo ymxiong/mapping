@@ -21,7 +21,7 @@ public @interface EnumValue {
 
     String enumClass();
 
-    String message() default "";
+    String message() default "参数值与枚举值不匹配";
 
     String enumMethod() default "contains";
 
