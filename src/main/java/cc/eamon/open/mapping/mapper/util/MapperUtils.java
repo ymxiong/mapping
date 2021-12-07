@@ -60,6 +60,28 @@ public class MapperUtils {
         return typeMirrorList;
     }
 
+
+    /**
+     * build string annotation value list
+     * usage for build string annotation value list
+     *
+     * @param annotationValuesMap values map for annotation value
+     * @param key                 filter key
+     * @return string values
+     */
+    public static TypeMirror buildAnnotationValueToTypeMirror(Map<String, Object> annotationValuesMap, String key) {
+        TypeMirror typeMirror=null;
+        if (annotationValuesMap.get(key) != null) {
+            Object o = annotationValuesMap.get(key);
+            if (((AnnotationValue) o).getValue() instanceof TypeMirror) {
+                typeMirror=(TypeMirror) ((AnnotationValue) o).getValue();
+            }
+        }
+        return typeMirror;
+
+    }
+
+
     /**
      * build string annotation value list
      * usage for build string annotation value list

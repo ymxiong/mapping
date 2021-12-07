@@ -243,25 +243,57 @@ public class User {
 
 
 
-### 扩展使用：Extra
+### 枚举校验：EnumValue
 
-场景：在更新用户的同时，同时更新用户的权限列表，此时需要给User实体加上权限列表属性
+场景：一些实体的字段只能是一些限定值，比如订单状态，订单类型等等，手动写校验代码比较麻烦，因此采用枚举类结合注解进行校验
 
-配置如下：
+
+枚举类代码如下，需要实现一个方法来检验参数值是否符合枚举规则，推荐方法名定义contains
+```java
+@AllArgsConstructor
+public enum DemandPriorityEnum {
+   NORMAL("普通"),
+   MIDDLE("一般"),
+   HIGH("较高");
+
+   @Getter
+   private final String type;
+
+   public static boolean contains(String priority) {
+      for (DemandPriorityEnum priorityEnum : DemandPriorityEnum.values()) {
+         if (priorityEnum.type.equals(priority)) {
+            return true;
+         }
+      }
+      return false;
+   }
+}
+```
+实体类配置如下：
+
+value定义此注解应用到的Mapper
+
+message默认值为" ",为错误报错信息
+
+enumClass指定校验枚举类,值为枚举类全路径
+
+enumMethod默认值为contains,对应枚举类的校验方法，若方法定义名为contains,此处可省略不写
 
 ```java
 @Setter
 @Getter
-@Mapper("update")
-@MapperExtra(
-        value = "update", // 对应的mapper
-        list = true, // 是否为list
-        name = "permits", // 属性名称
-        type = "java.lang.Integer"// 对象类型
-)
-public class User {
+@Mapper("post")
+public class Demand {
 
     private int id;
+
+   @MapperEnumValue(
+           value = {"post"},
+           message = "priority值错误",
+           enumClass = "com.horsecoder.demand.dem.enums.DemandPriorityEnum",
+           enumMethod = "contains"                    
+   )
+   private String priority;
 
 }
 ```
@@ -269,34 +301,33 @@ public class User {
 生成结果：
 
 ```java
-public class UserUpdateMapper {
+public class DemandPostMapper  {
     
     public int id;
-    
-    public List<Integer> permits;
-    
-    public static Map<String, Object> getMap(User obj) {
-        Map<String, Object> resultMap = new LinkedHashMap<>();
-        if (obj == null) return resultMap;
-        resultMap.put("id", obj.getId());
-        return resultMap;
-    }
-    public static Map<String, Object> getMapWithExtra(User obj, List<Integer> permits) {
-        Map<String, Object> resultMap = new LinkedHashMap<>();
-        if (obj == null) return resultMap;
-        resultMap.put("id", obj.getId());
-        resultMap.put("permits", permits);
-        return resultMap;
-    }
-    public User getEntity() {
-        User entity = new User();
-        entity.setId(this.id);
-        return entity;
-    }
+
+   @EnumValue(
+           message = "priority值错误",           
+           enumClass = "com.horsecoder.demand.dem.enums.DemandPriorityEnum",
+           enumMethod = "contains"
+   )
+   public String priority;
 }
 ```
 
-系统自动生成getMapWithExtra()方法，参数列表中多出extra字段。
+
+参数校验处加上@Valid注解即可
+
+
+```java
+import javax.validation.Valid;
+@ResponseBody
+public Map<String, Object> post(@Valid @RequestBody DemandPostMapper postMapper) {
+        return Status.successBuilder()
+        .addDataValue(demandService.postMapping(postMapper))
+        .map();
+        }
+```
+
 
 ## 开发说明
 
